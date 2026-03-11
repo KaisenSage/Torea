@@ -10,19 +10,25 @@ export default async function AdminOrdersPage() {
         <table className="min-w-full text-sm">
           <thead className="bg-zinc-50 text-left text-zinc-500">
             <tr>
-              <th className="px-4 py-3">Order</th>
-              <th className="px-4 py-3">Status</th>
+              <th className="px-4 py-3">Reference</th>
+              <th className="px-4 py-3">Customer Email</th>
               <th className="px-4 py-3">Amount</th>
+              <th className="px-4 py-3">Status</th>
+              <th className="px-4 py-3">Pending</th>
+              <th className="px-4 py-3">Date</th>
             </tr>
           </thead>
           <tbody>
             {orders.map((order) => (
               <tr key={order.id} className="border-t border-zinc-100">
-                <td className="px-4 py-3">{order.orderNumber}</td>
-                <td className="px-4 py-3">{order.status}</td>
+                <td className="px-4 py-3">{order.payment?.reference || "-"}</td>
+                <td className="px-4 py-3">{order.user?.email || "-"}</td>
                 <td className="px-4 py-3">
                   ₦{(order.totalKobo / 100).toLocaleString("en-NG", { minimumFractionDigits: 2 })}
                 </td>
+                <td className="px-4 py-3">{order.status}</td>
+                <td className="px-4 py-3">{order.status === "PENDING" ? "Yes" : "No"}</td>
+                <td className="px-4 py-3">{new Date(order.createdAt).toLocaleString()}</td>
               </tr>
             ))}
           </tbody>

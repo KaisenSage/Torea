@@ -1,4 +1,6 @@
 import Image from "next/image";
+import Link from "next/link";
+import { FaFacebook, FaTwitter, FaWhatsapp } from "react-icons/fa";
 import { notFound } from "next/navigation";
 import { prisma } from "@/server/db/prisma";
 import { ProductVariantPurchase } from "@/components/product/ProductVariantPurchase";
@@ -44,65 +46,18 @@ function shouldHideFeature(value: string) {
   return hiddenFeatureTokens.has(normalized);
 }
 
-const fallbackProducts = new Map([
-  [
-    "dream-club-black",
-    {
-      name: "TORÉA Island Dream Club T-shirt in black",
-      description: "Cotton jersey tee with minimal branding and premium finish.",
-      priceKobo: 4000000,
-      imageUrl: "https://images.unsplash.com/photo-1554412933-514a83d2f3c8?q=80&w=1200&auto=format&fit=crop",
-      sizes: ["S", "M", "L"],
-      colors: ["Black"],
-    },
-  ],
-  [
-    "earth-fingerprint-ecru",
-    {
-      name: "TORÉA Earth Fingerprint T-shirt in ecru",
-      description: "Soft-touch ecru base with fingerprint editorial artwork.",
-      priceKobo: 4000000,
-      imageUrl: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=1200&auto=format&fit=crop",
-      sizes: ["S", "M", "L"],
-      colors: ["Ecru"],
-    },
-  ],
-  [
-    "dream-club-ecru",
-    {
-      name: "TORÉA Dream Club T-shirt in soft ecru",
-      description: "Relaxed fit tee for everyday elevated styling.",
-      priceKobo: 4000000,
-      imageUrl: "https://images.unsplash.com/photo-1551232864-3f0890e580d9?q=80&w=1200&auto=format&fit=crop",
-      sizes: ["S", "M", "L"],
-      colors: ["Soft Ecru"],
-    },
-  ],
-  [
-    "atlas-washed-grey",
-    {
-      name: "TORÉA Atlas T-shirt in washed grey",
-      description: "Washed grey texture with durable premium cotton.",
-      priceKobo: 4500000,
-      imageUrl: "https://images.unsplash.com/photo-1464863979621-258859e62245?q=80&w=1200&auto=format&fit=crop",
-      sizes: ["S", "M", "L"],
-      colors: ["Washed Grey"],
-    },
-  ],
-  [
-    "destiny-print-black",
-    {
-      name: "TORÉA Destiny print T-shirt in black",
-      description: "Statement print piece designed for DETTY DECEMBER looks.",
-      priceKobo: 4000000,
-      imageUrl: "https://images.unsplash.com/photo-1485462537746-965f33f7f6a7?q=80&w=1200&auto=format&fit=crop",
-      sizes: ["S", "M", "L"],
-      colors: ["Black"],
-    },
-  ],
-]);
-
 export default async function ProductPage({ params }: ProductPageProps) {
+    // Recently viewed products (client-side only)
+    let recentlyViewed: any[] = [];
+    if (typeof window !== "undefined") {
+      const viewed = JSON.parse(localStorage.getItem("recentlyViewed") || "[]");
+      if (!viewed.find((p: any) => p.slug === slug)) {
+        viewed.unshift({ slug, name: product?.name, image: heroImage });
+        if (viewed.length > 5) viewed.pop();
+        localStorage.setItem("recentlyViewed", JSON.stringify(viewed));
+      }
+      recentlyViewed = viewed.filter((p: any) => p.slug !== slug);
+    }
   const { slug } = await params;
   let product: ProductRecord | null = null;
 
@@ -122,39 +77,32 @@ export default async function ProductPage({ params }: ProductPageProps) {
     product = null;
   }
 
-  const fallback = fallbackProducts.get(slug);
-  if ((!product || !product.isActive) && !fallback) {
+  if (!product || !product.isActive) {
     notFound();
   }
 
-  const minPrice = product
-    ? product.variants.length
-      ? Math.min(...product.variants.map((variant: ProductPageVariant) => variant.priceKobo))
-      : 0
-    : fallback?.priceKobo || 0;
+  const minPrice = product.variants.length
+    ? Math.min(...product.variants.map((variant: ProductPageVariant) => variant.priceKobo))
+    : 0;
 
   const heroImage =
     product?.images[0]?.cloudflareImageId && process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH
       ? `https://imagedelivery.net/${process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH}/${product.images[0].cloudflareImageId}/public`
-      : fallback?.imageUrl || "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1200&auto=format&fit=crop";
-  const imageAlt = product?.name || fallback?.name || "TORÉA product";
+      : "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1200&auto=format&fit=crop";
+  const imageAlt = product?.name || "TORÉA product";
 
-  const sizes = product
-    ? Array.from(
-        new Set([
-          ...(Array.isArray(product.availableSizes) ? product.availableSizes.map((size: unknown) => String(size)) : []),
-          ...product.variants.map((variant: ProductPageVariant) => variant.size).filter(Boolean).map((size: string | null) => String(size)),
-        ]),
-      )
-    : fallback?.sizes || [];
-  const colors = product
-    ? Array.from(
-        new Set([
-          ...(Array.isArray(product.availableColors) ? product.availableColors.map((color: unknown) => String(color)) : []),
-          ...product.variants.map((variant: ProductPageVariant) => variant.color).filter(Boolean).map((color: string | null) => String(color)),
-        ]),
-      )
-    : fallback?.colors || [];
+  const sizes = Array.from(
+    new Set([
+      ...(Array.isArray(product.availableSizes) ? product.availableSizes.map((size: unknown) => String(size)) : []),
+      ...product.variants.map((variant: ProductPageVariant) => variant.size).filter(Boolean).map((size: string | null) => String(size)),
+    ]),
+  );
+  const colors = Array.from(
+    new Set([
+      ...(Array.isArray(product.availableColors) ? product.availableColors.map((color: unknown) => String(color)) : []),
+      ...product.variants.map((variant: ProductPageVariant) => variant.color).filter(Boolean).map((color: string | null) => String(color)),
+    ]),
+  );
   const keyFeatures = Array.isArray(product?.keyFeatures)
     ? product.keyFeatures
         .map((feature: unknown) => String(feature).trim())
@@ -167,18 +115,28 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const showSubcategory =
     Boolean(subcategory) && category.toLowerCase() !== subcategory.toLowerCase();
 
+  // Fetch recommendations
+  let recommendations: any[] = [];
+  try {
+    const recommendationsRes = await fetch(
+      `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/products/recommendations?productId=${product.id}`,
+      { cache: "no-store" }
+    );
+    recommendations = recommendationsRes.ok ? await recommendationsRes.json() : [];
+  } catch {}
+
   return (
     <div className="grid gap-8 pb-16 md:grid-cols-2">
       <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-zinc-100">
         <Image src={heroImage} alt={imageAlt} fill className="object-cover" />
       </div>
-      <div className="space-y-5">
-        <h1 className="text-3xl font-semibold text-zinc-900">{product?.name || fallback?.name}</h1>
+      <div className="space-y-5 relative">
+        <h1 className="text-3xl font-semibold text-zinc-900">{product?.name}</h1>
         <p className="text-xl text-zinc-700">
           ₦{(minPrice / 100).toLocaleString("en-NG", { minimumFractionDigits: 2 })}
         </p>
         <p className="max-w-lg text-zinc-600">
-          {product?.description || fallback?.description || "Structured silhouette with breathable fabric, made for movement and warm weather layering."}
+          {product?.description || "Structured silhouette with breathable fabric, made for movement and warm weather layering."}
         </p>
 
         <div className="flex flex-wrap gap-2 text-xs">
@@ -194,7 +152,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           sizes={sizes.map((size) => String(size))}
           colors={colors.map((color) => String(color))}
           totalStock={totalStock}
-          fallbackEnabled={Boolean(fallback)}
+          fallbackEnabled={false}
           variants={(product?.variants || []).map((variant: ProductPageVariant) => ({
             id: variant.id,
             size: variant.size,
@@ -242,8 +200,61 @@ export default async function ProductPage({ params }: ProductPageProps) {
             </span>
           ))}
         </div>
-
+        <Image
+          src="https://pub-bd618a9723f54128a9dbd24698f83fba.r2.dev/ChatGPT%20Image%20Mar%2011%2C%202026%20at%2011_11_55%20AM.png"
+          alt="TORÉA Logo Background"
+          width={320}
+          height={120}
+          className="absolute left-1/2 -translate-x-1/2 bottom-0 opacity-10 pointer-events-none select-none"
+          unoptimized
+        />
       </div>
+      {/* Recently Viewed Products */}
+      {recentlyViewed && recentlyViewed.length > 0 && (
+        <div className="mt-10">
+          <h2 className="text-xl font-semibold mb-4">Recently viewed</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {recentlyViewed.map((p: any) => (
+              <Link key={p.slug} href={`/product/${p.slug}`} className="block">
+                <div className="aspect-[4/5] overflow-hidden rounded-xl bg-zinc-100">
+                  <Image src={p.image} alt={p.name} width={120} height={150} className="object-cover w-full h-full" />
+                </div>
+                <p className="mt-2 text-sm font-medium text-zinc-900 truncate">{p.name}</p>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+      {recommendations && recommendations.length > 0 && (
+        <div className="md:col-span-2">
+          <div className="mt-20">
+            <h2 className="text-2xl font-semibold mb-6">You may also like</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
+              {recommendations.map((product) => (
+                <a key={product.id} href={`/product/${product.slug}`} className="group block">
+                  <div className="aspect-[4/5] overflow-hidden rounded-xl bg-zinc-100">
+                    {product.images?.[0]?.cloudflareImageId ? (
+                      <Image
+                        src={`https://imagedelivery.net/${process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH}/${product.images[0].cloudflareImageId}/public`}
+                        alt={product.name}
+                        width={220}
+                        height={275}
+                        className="object-cover w-full h-full group-hover:scale-105 transition"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-zinc-400">No image</div>
+                    )}
+                  </div>
+                  <p className="mt-2 text-sm font-medium text-zinc-900 truncate">{product.name}</p>
+                  <p className="font-semibold text-zinc-700">
+                    ₦{product.variants?.[0]?.priceKobo ? (product.variants[0].priceKobo / 100).toLocaleString("en-NG", { minimumFractionDigits: 2 }) : "-"}
+                  </p>
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

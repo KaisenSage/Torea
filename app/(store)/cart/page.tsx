@@ -3,46 +3,17 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { FaTrash } from "react-icons/fa";
 
 type CartItem = {
   key: string;
   name: string;
   size: string;
+  color: string;
   priceKobo: number;
   quantity: number;
   imageUrl: string;
 };
-
-const recommendations = [
-  {
-    id: "r1",
-    name: "TORÉA Earth Fingerprint T-shirt in ecru",
-    priceKobo: 5500000,
-    href: "/product/earth-fingerprint-ecru",
-    imageUrl: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=400&auto=format&fit=crop",
-  },
-  {
-    id: "r2",
-    name: "TORÉA Atlas T-shirt in washed grey",
-    priceKobo: 4500000,
-    href: "/product/atlas-washed-grey",
-    imageUrl: "https://images.unsplash.com/photo-1464863979621-258859e62245?q=80&w=400&auto=format&fit=crop",
-  },
-  {
-    id: "r3",
-    name: "TORÉA Structured Kaftan",
-    priceKobo: 6200000,
-    href: "/product/structured-kaftan",
-    imageUrl: "https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=400&auto=format&fit=crop",
-  },
-  {
-    id: "r4",
-    name: "TORÉA Linen Two Piece Set",
-    priceKobo: 6900000,
-    href: "/product/linen-two-piece-set",
-    imageUrl: "https://images.unsplash.com/photo-1551232864-3f0890e580d9?q=80&w=400&auto=format&fit=crop",
-  },
-];
 
 function formatNaira(priceKobo: number) {
   return `₦${(priceKobo / 100).toLocaleString("en-NG", { minimumFractionDigits: 2 })}`;
@@ -51,6 +22,10 @@ function formatNaira(priceKobo: number) {
 export default function CartPage() {
   const [items, setItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [newsletterEmail, setNewsletterEmail] = useState("");
+  const [isSubscribing, setIsSubscribing] = useState(false);
+  const [newsletterMessage, setNewsletterMessage] = useState<string | null>(null);
+  const [newsletterError, setNewsletterError] = useState<string | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -120,6 +95,44 @@ export default function CartPage() {
     window.dispatchEvent(new Event("cart:updated"));
   }
 
+  async function subscribeNewsletter() {
+    const email = newsletterEmail.trim().toLowerCase();
+    const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+    setNewsletterMessage(null);
+    setNewsletterError(null);
+
+    if (!isValidEmail) {
+      setNewsletterError("Enter a valid email address.");
+      return;
+    }
+
+    try {
+      setIsSubscribing(true);
+      const response = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = (await response.json()) as { ok?: boolean; message?: string; error?: string };
+
+      if (!response.ok || !data.ok) {
+        setNewsletterError(data.error || "Unable to subscribe right now.");
+        return;
+      }
+
+      setNewsletterMessage(data.message || "You are now subscribed.");
+      setNewsletterEmail("");
+    } catch {
+      setNewsletterError("Unable to subscribe right now.");
+    } finally {
+      setIsSubscribing(false);
+    }
+  }
+
   const subtotalKobo = useMemo(
     () => items.reduce((sum, item) => sum + item.priceKobo * item.quantity, 0),
     [items],
@@ -132,7 +145,7 @@ export default function CartPage() {
         <button
           type="button"
           onClick={clearCart}
-          className="mt-4 text-xs uppercase tracking-[0.18em] text-zinc-600 underline underline-offset-4"
+          className="mt-4 rounded-full border border-red-600 bg-white px-4 py-2 text-xs font-medium uppercase tracking-[0.18em] text-black transition hover:bg-red-600 hover:text-white"
         >
           Clear cart
         </button>
@@ -154,7 +167,7 @@ export default function CartPage() {
                     </div>
                     <div className="space-y-2">
                       <p className="max-w-sm text-sm font-medium text-zinc-900">{item.name}</p>
-                      <p className="text-xs text-zinc-600">Size: {item.size}</p>
+                      <p className="text-xs text-zinc-600">Size: {item.size} • Color: {item.color}</p>
                       <div className="flex items-center gap-3">
                         <div className="inline-flex items-center overflow-hidden rounded-md border border-zinc-300">
                           <button
@@ -175,8 +188,13 @@ export default function CartPage() {
                           </button>
                         </div>
 
-                        <button type="button" onClick={() => removeItem(item.key)} className="text-xs underline underline-offset-2">
-                          Remove
+                        <button
+                          type="button"
+                          onClick={() => removeItem(item.key)}
+                          className="ml-2 rounded-full border border-zinc-300 bg-white p-2 text-zinc-500 hover:text-red-600 hover:border-red-600 transition"
+                          aria-label="Remove item"
+                        >
+                          <FaTrash className="h-4 w-4" />
                         </button>
                       </div>
                     </div>
@@ -188,20 +206,6 @@ export default function CartPage() {
             )}
           </div>
 
-          <div className="space-y-4">
-            <h2 className="text-lg font-semibold text-zinc-900">Goes great with</h2>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {recommendations.map((item) => (
-                <Link key={item.id} href={item.href} className="space-y-3">
-                  <div className="relative aspect-[4/5] overflow-hidden rounded-xl bg-zinc-100">
-                    <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
-                  </div>
-                  <p className="line-clamp-2 text-sm text-zinc-800">{item.name}</p>
-                  <p className="text-sm font-semibold">{formatNaira(item.priceKobo)}</p>
-                </Link>
-              ))}
-            </div>
-          </div>
         </div>
 
         <aside className="h-fit rounded-2xl border border-zinc-200 bg-white p-5 sm:p-6 lg:sticky lg:top-24">
@@ -227,46 +231,28 @@ export default function CartPage() {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-zinc-800">Subscribe today to hear first about our sales</p>
           <div className="flex w-full max-w-md gap-2">
-            <input placeholder="Email address" className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm" />
-            <button type="button" className="rounded-lg bg-black px-4 py-2 text-sm text-white">
-              Subscribe
+            <input
+              value={newsletterEmail}
+              onChange={(event) => setNewsletterEmail(event.target.value)}
+              placeholder="Email address"
+              type="email"
+              autoComplete="email"
+              className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm"
+            />
+            <button
+              type="button"
+              onClick={subscribeNewsletter}
+              disabled={isSubscribing}
+              className="rounded-lg bg-black px-4 py-2 text-sm text-white disabled:opacity-60"
+            >
+              {isSubscribing ? "Subscribing..." : "Subscribe"}
             </button>
           </div>
         </div>
+        {newsletterMessage ? <p className="mt-3 text-sm text-emerald-700">{newsletterMessage}</p> : null}
+        {newsletterError ? <p className="mt-3 text-sm text-red-600">{newsletterError}</p> : null}
       </section>
 
-      <button
-        type="button"
-        className="fixed right-0 top-1/2 z-40 -translate-y-1/2 rounded-l-full border border-zinc-300 bg-white px-3 py-2 text-xs tracking-[0.18em]"
-      >
-        Share
-      </button>
-
-      <Link
-        href="https://wa.me/2348012345678?text=Hi%20TOR%C3%89A%2C%20I%20need%20help%20with%20my%20order"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="fixed bottom-20 right-6 z-40 inline-flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500 text-white"
-        aria-label="WhatsApp"
-      >
-        💬
-      </Link>
-
-      <Link
-        href="https://wa.me/2348012345678?text=Hi%20TOR%C3%89A%2C%20I%20need%20help%20with%20my%20order"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="fixed bottom-6 right-6 z-40 rounded-full bg-black px-5 py-3 text-sm text-white"
-      >
-        Contact us
-      </Link>
-
-      <button
-        type="button"
-        className="fixed bottom-6 left-6 z-40 rounded-full border border-zinc-300 bg-white px-4 py-2 text-xs tracking-[0.18em]"
-      >
-        NGN ▾
-      </button>
     </div>
   );
 }

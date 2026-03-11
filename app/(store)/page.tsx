@@ -1,44 +1,7 @@
 import FeaturedProductsSection from "@/components/featured/FeaturedProductsSection";
+import HomeExperienceSections from "@/components/home/HomeExperienceSections";
 import Link from "next/link";
 import { prisma } from "@/server/db/prisma";
-
-const featured = [
-  {
-    id: "1",
-    name: "TORÉA Island Dream Club T-shirt in black",
-    href: "/product/dream-club-black",
-    imageUrl: "https://images.unsplash.com/photo-1554412933-514a83d2f3c8?q=80&w=1200&auto=format&fit=crop",
-    priceKobo: 4000000,
-  },
-  {
-    id: "2",
-    name: "TORÉA Earth Fingerprint T-shirt in ecru",
-    href: "/product/earth-fingerprint-ecru",
-    imageUrl: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=1200&auto=format&fit=crop",
-    priceKobo: 4000000,
-  },
-  {
-    id: "3",
-    name: "TORÉA Dream Club T-shirt in soft ecru",
-    href: "/product/dream-club-ecru",
-    imageUrl: "https://images.unsplash.com/photo-1551232864-3f0890e580d9?q=80&w=1200&auto=format&fit=crop",
-    priceKobo: 4000000,
-  },
-  {
-    id: "4",
-    name: "TORÉA Atlas T-shirt in washed grey",
-    href: "/product/atlas-washed-grey",
-    imageUrl: "https://images.unsplash.com/photo-1464863979621-258859e62245?q=80&w=1200&auto=format&fit=crop",
-    priceKobo: 4500000,
-  },
-  {
-    id: "5",
-    name: "TORÉA Destiny print T-shirt in black",
-    href: "/product/destiny-print-black",
-    imageUrl: "https://images.unsplash.com/photo-1485462537746-965f33f7f6a7?q=80&w=1200&auto=format&fit=crop",
-    priceKobo: 4000000,
-  },
-];
 
 export default async function StoreHomePage() {
   let dbProducts: Array<{
@@ -68,30 +31,39 @@ export default async function StoreHomePage() {
     dbProducts = [];
   }
 
-  const featuredProducts =
-    dbProducts.length > 0
-      ? dbProducts.map((product) => ({
-          id: product.id,
-          name: product.name,
-          href: `/product/${product.slug}`,
-          imageUrl:
-            product.images[0]?.cloudflareImageId
-              ? `https://imagedelivery.net/${process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH}/${product.images[0].cloudflareImageId}/public`
-              : "https://images.unsplash.com/photo-1554412933-514a83d2f3c8?q=80&w=1200&auto=format&fit=crop",
-          priceKobo: product.variants[0]?.priceKobo ?? 0,
-        }))
-      : featured;
+  const featuredProducts = dbProducts.map((product) => ({
+    id: product.id,
+    name: product.name,
+    href: `/product/${product.slug}`,
+    imageUrl:
+      product.images[0]?.cloudflareImageId
+        ? `https://imagedelivery.net/${process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH}/${product.images[0].cloudflareImageId}/public`
+        : "https://images.unsplash.com/photo-1554412933-514a83d2f3c8?q=80&w=1200&auto=format&fit=crop",
+    priceKobo: product.variants[0]?.priceKobo ?? 0,
+  }));
 
   return (
     <div className="space-y-12 pb-16">
-      <section className="relative overflow-hidden rounded-3xl bg-[radial-gradient(circle_at_10%_20%,#fff7ed_0%,#ffedd5_28%,#fde68a_100%)] px-6 py-16 sm:px-10">
-        <p className="mb-4 text-xs uppercase tracking-[0.3em] text-zinc-700">TORÉA</p>
-        <h1 className="max-w-2xl text-4xl font-semibold leading-tight text-zinc-900 sm:text-5xl">
-          Elevated essentials for every DETTY DECEMBER moment.
+      <section className="relative overflow-hidden rounded-3xl border border-zinc-200 bg-[radial-gradient(circle_at_12%_18%,#fff7ed_0%,#ffe8cc_32%,#ffd7a8_62%,#f4f4f5_100%)] px-6 py-16 sm:px-10">
+        <div className="absolute -right-20 top-0 h-60 w-60 rounded-full bg-white/40 blur-3xl" />
+        <div className="absolute -left-20 bottom-0 h-56 w-56 rounded-full bg-amber-200/40 blur-3xl" />
+
+        <p className="relative mb-4 text-xs uppercase tracking-[0.3em] text-zinc-700">TORÉA</p>
+        <h1 className="relative max-w-3xl text-4xl font-semibold leading-tight text-zinc-900 sm:text-5xl">
+          Explore TORÉA
         </h1>
-        <p className="mt-4 max-w-xl text-sm text-zinc-700 sm:text-base">
-          Discover clean silhouettes, signature prints, and premium ready-to-wear designed for Nigeria.
+        <p className="relative mt-4 max-w-2xl text-sm text-zinc-700 sm:text-base">
+          Elevate your training, recovery, and everyday motion with premium gym and fitness apparel. Engineered for comfort, performance, and confidence—TORÉA is where style meets strength.
         </p>
+
+        <div className="relative mt-8 flex flex-wrap gap-3">
+          <Link
+            href="/shop"
+            className="rounded-full bg-black px-5 py-3 text-sm font-medium text-white transition hover:bg-zinc-800"
+          >
+            Shop TORÉA
+          </Link>
+        </div>
       </section>
 
       <section className="flex flex-wrap gap-2">
@@ -111,7 +83,9 @@ export default async function StoreHomePage() {
         ))}
       </section>
 
-      <FeaturedProductsSection products={featuredProducts} viewAllHref="/shop" />
+      {featuredProducts.length > 0 ? <FeaturedProductsSection products={featuredProducts} viewAllHref="/shop" /> : null}
+
+      <HomeExperienceSections />
     </div>
   );
 }

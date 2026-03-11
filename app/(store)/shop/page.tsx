@@ -173,8 +173,8 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
       : selectedCategory === "bottoms"
         ? "Shop bottoms pulled directly from your Google Sheet catalog."
         : sort === "price-asc"
-          ? "Browse the most accessible pieces in your catalog first."
-        : "Filter by fit, color, and product features across your full catalog.";
+          ? "Browse our catalog"
+        : "Browse our catalog";
   const activeChip = selectedCategory || (sort === "price-asc" ? "new-arrivals" : "all");
 
   const sorted = [...filtered].sort((a, b) => {

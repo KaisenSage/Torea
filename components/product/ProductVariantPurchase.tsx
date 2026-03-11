@@ -23,6 +23,10 @@ function normalize(value: string | null | undefined) {
   return (value || "").trim().toLowerCase();
 }
 
+function encodeCartPart(value: string) {
+  return encodeURIComponent(value.trim());
+}
+
 export function ProductVariantPurchase({
   slug,
   sizes,
@@ -66,6 +70,17 @@ export function ProductVariantPurchase({
     return source[0] || null;
   }, [variants, selectedSize, selectedColor]);
 
+  const hasExactSelectedVariant = useMemo(
+    () =>
+      variants.some(
+        (variant) =>
+          normalize(variant.size) === normalize(selectedSize) &&
+          normalize(variant.color) === normalize(selectedColor) &&
+          variant.stock > 0,
+      ),
+    [variants, selectedSize, selectedColor],
+  );
+
   async function addSelectedToCart() {
     if (isAdding || (totalStock <= 0 && !fallbackEnabled)) {
       return;
@@ -74,7 +89,9 @@ export function ProductVariantPurchase({
     try {
       setIsAdding(true);
 
-      const key = selectedVariant ? `variant:${selectedVariant.id}` : `fallback:${slug}`;
+      const key = selectedVariant && hasExactSelectedVariant
+        ? `variant:${selectedVariant.id}`
+        : `fallback:${slug}::size=${encodeCartPart(selectedSize || "M")}::color=${encodeCartPart(selectedColor || "Default")}`;
       const response = await fetch("/api/cart", {
         method: "PATCH",
         headers: {
@@ -150,7 +167,7 @@ export function ProductVariantPurchase({
           type="button"
           onClick={addSelectedToCart}
           disabled={isAdding || (totalStock <= 0 && !fallbackEnabled)}
-          className="inline-flex items-center rounded-md bg-black px-4 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:bg-zinc-400"
+          className="inline-flex items-center rounded-full border border-black bg-black px-5 py-2 text-sm font-medium text-white transition hover:bg-zinc-900 hover:text-white disabled:cursor-not-allowed disabled:border-zinc-300 disabled:bg-zinc-100 disabled:text-zinc-400"
         >
           {isAdding ? "Adding..." : totalStock > 0 || fallbackEnabled ? "Add to cart" : "Unavailable"}
         </button>

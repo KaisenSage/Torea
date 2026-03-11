@@ -7,6 +7,7 @@ type CartLineItem = {
   key: string;
   name: string;
   size: string;
+  color: string;
   quantity: number;
   priceKobo: number;
   imageUrl: string;
@@ -17,11 +18,27 @@ type CartResponse = {
 };
 
 function fallbackNameFromKey(key: string) {
-  const slug = key.replace(/^fallback:/, "");
+  const slug = key.replace(/^fallback:/, "").split("::")[0] || "product";
   return slug
     .split("-")
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(" ");
+}
+
+function parseFallbackMeta(key: string) {
+  const [, rawMeta] = key.split("fallback:");
+  const parts = (rawMeta || "").split("::");
+  const sizePart = parts.find((part) => part.startsWith("size="));
+  const colorPart = parts.find((part) => part.startsWith("color="));
+
+  const size = sizePart ? decodeURIComponent(sizePart.replace("size=", "")) : "M";
+  const color = colorPart ? decodeURIComponent(colorPart.replace("color=", "")) : "Default";
+
+  return { size, color };
+}
+
+function fallbackSlugFromKey(key: string) {
+  return key.replace(/^fallback:/, "").split("::")[0] || "";
 }
 
 function fallbackImageForKey(key: string) {
@@ -32,15 +49,129 @@ function fallbackImageForKey(key: string) {
   return "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=300&auto=format&fit=crop";
 }
 
-function fromCookieMap(map: Record<string, number>): CartResponse {
-  const items: CartLineItem[] = Object.entries(map).map(([key, quantity]) => ({
-    key,
-    name: `TORÉA ${fallbackNameFromKey(key)}`,
-    size: "M",
-    quantity,
-    priceKobo: 4000000,
-    imageUrl: fallbackImageForKey(key),
-  }));
+async function fromCookieMap(map: Record<string, number>): Promise<CartResponse> {
+  const entries = Object.entries(map);
+  const variantIds = entries
+    .map(([key]) => (key.startsWith("variant:") ? key.replace("variant:", "") : ""))
+    .filter(Boolean);
+  const fallbackSlugs = entries
+    .map(([key]) => (key.startsWith("fallback:") ? fallbackSlugFromKey(key) : ""))
+    .filter(Boolean);
+
+  let variantLookup = new Map<string, CartLineItem>();
+  let fallbackLookup = new Map<string, { name: string; priceKobo: number; imageUrl: string }>();
+
+  if (variantIds.length > 0) {
+    try {
+      const variants = await prisma.productVariant.findMany({
+        where: { id: { in: variantIds } },
+        include: {
+          product: {
+            include: {
+              images: {
+                orderBy: { sortOrder: "asc" },
+                take: 1,
+              },
+            },
+          },
+        },
+      });
+
+      variantLookup = new Map(
+        variants.map((variant) => [
+          variant.id,
+          {
+            key: `variant:${variant.id}`,
+            name: variant.product.name,
+            size: variant.size || "One size",
+            color: variant.color || "Default",
+            quantity: 0,
+            priceKobo: variant.priceKobo,
+            imageUrl:
+              variant.product.images[0]?.cloudflareImageId && process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH
+                ? `https://imagedelivery.net/${process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH}/${variant.product.images[0].cloudflareImageId}/public`
+                : fallbackImageForKey(variant.product.slug),
+          },
+        ]),
+      );
+    } catch {
+      variantLookup = new Map();
+    }
+  }
+
+  if (fallbackSlugs.length > 0) {
+    try {
+      const products = await prisma.product.findMany({
+        where: {
+          slug: {
+            in: Array.from(new Set(fallbackSlugs)),
+          },
+          isActive: true,
+        },
+        include: {
+          variants: {
+            orderBy: { createdAt: "asc" },
+          },
+          images: {
+            orderBy: { sortOrder: "asc" },
+            take: 1,
+          },
+        },
+      });
+
+      fallbackLookup = new Map(
+        products.map((product) => {
+          const lowestPriceKobo = product.variants.length
+            ? Math.min(...product.variants.map((variant) => variant.priceKobo))
+            : 4000000;
+
+          const imageUrl =
+            product.images[0]?.cloudflareImageId && process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH
+              ? `https://imagedelivery.net/${process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH}/${product.images[0].cloudflareImageId}/public`
+              : fallbackImageForKey(product.slug);
+
+          return [
+            product.slug,
+            {
+              name: product.name,
+              priceKobo: lowestPriceKobo,
+              imageUrl,
+            },
+          ];
+        }),
+      );
+    } catch {
+      fallbackLookup = new Map();
+    }
+  }
+
+  const items: CartLineItem[] = entries.map(([key, quantity]) => {
+    if (key.startsWith("variant:")) {
+      const variantId = key.replace("variant:", "");
+      const variantItem = variantLookup.get(variantId);
+
+      if (variantItem) {
+        return {
+          ...variantItem,
+          quantity,
+        };
+      }
+    }
+
+    const fallbackSlug = fallbackSlugFromKey(key);
+    const fallbackItem = fallbackLookup.get(fallbackSlug);
+    const fallbackMeta = parseFallbackMeta(key);
+
+    return {
+      key,
+      name: fallbackItem?.name || `TORÉA ${fallbackNameFromKey(key)}`,
+      size: fallbackMeta.size,
+      color: fallbackMeta.color,
+      quantity,
+      priceKobo: fallbackItem?.priceKobo || 4000000,
+      imageUrl: fallbackItem?.imageUrl || fallbackImageForKey(key),
+    };
+  });
 
   return { items };
 }
@@ -82,6 +213,7 @@ async function fromDatabase(clerkId: string): Promise<CartResponse | null> {
     key: `variant:${item.variantId}`,
     name: item.variant.product.name,
     size: item.variant.size || "One size",
+    color: item.variant.color || "Default",
     quantity: item.quantity,
     priceKobo: item.variant.priceKobo,
     imageUrl:
@@ -108,7 +240,7 @@ export async function GET() {
   }
 
   const cookieMap = await getCartCookieMap();
-  return NextResponse.json(fromCookieMap(cookieMap), { status: 200 });
+  return NextResponse.json(await fromCookieMap(cookieMap), { status: 200 });
 }
 
 export async function PATCH(req: Request) {
@@ -190,7 +322,7 @@ export async function PATCH(req: Request) {
   }
 
   await setCartCookieMap(map);
-  return NextResponse.json(fromCookieMap(map), { status: 200 });
+  return NextResponse.json(await fromCookieMap(map), { status: 200 });
 }
 
 export async function DELETE() {

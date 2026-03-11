@@ -7,6 +7,7 @@ type CartItem = {
   key: string;
   name: string;
   size: string;
+  color: string;
   quantity: number;
   priceKobo: number;
   imageUrl: string;
@@ -458,7 +459,7 @@ export default function CheckoutPage() {
                 <input type="radio" name="payment" disabled className="mt-1 h-4 w-4" />
                 <div>
                   <p className="font-medium text-zinc-900">Flutterwave</p>
-                  <p className="text-zinc-600">Coming soon for v2.</p>
+                  <p className="text-zinc-600">Coming soon</p>
                 </div>
               </div>
             </label>
@@ -496,7 +497,7 @@ export default function CheckoutPage() {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-zinc-900">{item.name}</p>
-                    <p className="text-xs text-zinc-600">Size {item.size}</p>
+                    <p className="text-xs text-zinc-600">Size {item.size} • Color {item.color}</p>
                   </div>
                 </div>
                 <p className="text-sm font-medium text-zinc-900">{formatNaira(item.priceKobo * item.quantity)}</p>

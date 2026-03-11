@@ -26,7 +26,7 @@ function formatNairaFromKobo(priceKobo: number) {
 }
 
 export default function FeaturedProductsSection({
-  title = "Explore our DETTY DECEMBER Picks",
+  title = "Explore TORÉA",
   viewAllHref = "/shop",
   products,
 }: {
