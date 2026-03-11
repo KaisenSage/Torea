@@ -17,12 +17,6 @@ function currentYear() {
 }
 
 export function StoreFooter() {
-  const pathname = usePathname();
-
-  if (pathname?.startsWith("/product/")) {
-    return null;
-  }
-
   return (
     <footer className="mt-12 rounded-3xl border border-zinc-200 bg-white px-6 py-8 sm:px-8">
       <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-[1.2fr_1fr_1fr]">
@@ -39,21 +33,20 @@ export function StoreFooter() {
             Wear elite. Train hard.
           </p>
           <div className="mt-4 flex gap-4">
-            <a href="https://instagram.com/torea.store" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+            <a href="https://www.instagram.com/heytoreah?igsh=b2R4anpmb3g2dTdi" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
               <FaInstagram className="h-7 w-7 text-zinc-700 hover:text-pink-500 transition" />
             </a>
-            <a href="https://wa.me/2348123456789" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
-              <FaWhatsapp className="h-7 w-7 text-zinc-700 hover:text-green-500 transition" />
-            </a>
-            <a href="https://www.tiktok.com/@torea.store" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+            <a href="https://www.tiktok.com/@heytoreah?_r=1&_t=ZS-94bHbrhDwa9" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
               <FaTiktok className="h-7 w-7 text-zinc-700 hover:text-black transition" />
             </a>
-            <a href="mailto:hello@torea.store" target="_blank" rel="noopener noreferrer" aria-label="Email">
+            <a href="https://wa.me/2348080523590" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+              <FaWhatsapp className="h-7 w-7 text-zinc-700 hover:text-green-500 transition" />
+            </a>
+            <a href="mailto:Heytoreah@gmail.com" target="_blank" rel="noopener noreferrer" aria-label="Email">
               <FaEnvelope className="h-7 w-7 text-zinc-700 hover:text-blue-500 transition" />
             </a>
           </div>
         </div>
-
         <div>
           <p className="text-sm font-semibold text-zinc-900">Shop</p>
           <ul className="mt-3 space-y-2 text-sm text-zinc-600">
@@ -66,7 +59,6 @@ export function StoreFooter() {
             ))}
           </ul>
         </div>
-
         <div>
           <p className="text-sm font-semibold text-zinc-900">Support</p>
           <ul className="mt-3 space-y-2 text-sm text-zinc-600">
@@ -88,7 +80,6 @@ export function StoreFooter() {
           </ul>
         </div>
       </div>
-
       <div className="mt-8 flex items-center justify-between gap-3 border-t border-zinc-200 pt-4 text-xs text-zinc-500">
         <span>© {currentYear()} TORÉA. All rights reserved.</span>
         <div className="flex items-center gap-4">
