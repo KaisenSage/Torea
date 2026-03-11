@@ -1,0 +1,215 @@
+import { NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
+import { prisma } from "@/server/db/prisma";
+import { getCartCookieMap, setCartCookieMap } from "@/server/services/cart-cookie";
+
+type CartLineItem = {
+  key: string;
+  name: string;
+  size: string;
+  quantity: number;
+  priceKobo: number;
+  imageUrl: string;
+};
+
+type CartResponse = {
+  items: CartLineItem[];
+};
+
+function fallbackNameFromKey(key: string) {
+  const slug = key.replace(/^fallback:/, "");
+  return slug
+    .split("-")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function fallbackImageForKey(key: string) {
+  if (key.includes("dream-club")) {
+    return "https://images.unsplash.com/photo-1554412933-514a83d2f3c8?q=80&w=300&auto=format&fit=crop";
+  }
+
+  return "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=300&auto=format&fit=crop";
+}
+
+function fromCookieMap(map: Record<string, number>): CartResponse {
+  const items: CartLineItem[] = Object.entries(map).map(([key, quantity]) => ({
+    key,
+    name: `TORÉA ${fallbackNameFromKey(key)}`,
+    size: "M",
+    quantity,
+    priceKobo: 4000000,
+    imageUrl: fallbackImageForKey(key),
+  }));
+
+  return { items };
+}
+
+async function fromDatabase(clerkId: string): Promise<CartResponse | null> {
+  const dbUser = await prisma.user.findUnique({ where: { clerkId }, select: { id: true } });
+
+  if (!dbUser) {
+    return null;
+  }
+
+  const cart = await prisma.cart.findUnique({
+    where: { userId: dbUser.id },
+    include: {
+      items: {
+        include: {
+          variant: {
+            include: {
+              product: {
+                include: {
+                  images: {
+                    orderBy: { sortOrder: "asc" },
+                    take: 1,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!cart) {
+    return { items: [] };
+  }
+
+  const items: CartLineItem[] = cart.items.map((item) => ({
+    key: `variant:${item.variantId}`,
+    name: item.variant.product.name,
+    size: item.variant.size || "One size",
+    quantity: item.quantity,
+    priceKobo: item.variant.priceKobo,
+    imageUrl:
+      item.variant.product.images[0]?.cloudflareImageId && process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH
+        ? `https://imagedelivery.net/${process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH}/${item.variant.product.images[0].cloudflareImageId}/public`
+        : "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=300&auto=format&fit=crop",
+  }));
+
+  return { items };
+}
+
+export async function GET() {
+  const { userId } = await auth();
+
+  if (userId) {
+    try {
+      const dbCart = await fromDatabase(userId);
+      if (dbCart) {
+        return NextResponse.json(dbCart, { status: 200 });
+      }
+    } catch {
+      // fall through to cookie mode
+    }
+  }
+
+  const cookieMap = await getCartCookieMap();
+  return NextResponse.json(fromCookieMap(cookieMap), { status: 200 });
+}
+
+export async function PATCH(req: Request) {
+  const payload = (await req.json()) as { key: string; action: "increment" | "decrement" | "remove" };
+  const { userId } = await auth();
+
+  if (!payload?.key || !payload?.action) {
+    return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
+  }
+
+  if (userId && payload.key.startsWith("variant:")) {
+    try {
+      const variantId = payload.key.replace("variant:", "");
+      const dbUser = await prisma.user.findUnique({ where: { clerkId: userId }, select: { id: true } });
+
+      if (dbUser) {
+        const cart = await prisma.cart.upsert({
+          where: { userId: dbUser.id },
+          update: {},
+          create: { userId: dbUser.id },
+        });
+
+        if (payload.action === "increment") {
+          await prisma.cartItem.upsert({
+            where: { cartId_variantId: { cartId: cart.id, variantId } },
+            update: { quantity: { increment: 1 } },
+            create: { cartId: cart.id, variantId, quantity: 1 },
+          });
+        }
+
+        if (payload.action === "decrement") {
+          const existing = await prisma.cartItem.findUnique({
+            where: { cartId_variantId: { cartId: cart.id, variantId } },
+          });
+
+          if (existing) {
+            if (existing.quantity <= 1) {
+              await prisma.cartItem.delete({ where: { id: existing.id } });
+            } else {
+              await prisma.cartItem.update({
+                where: { id: existing.id },
+                data: { quantity: { decrement: 1 } },
+              });
+            }
+          }
+        }
+
+        if (payload.action === "remove") {
+          await prisma.cartItem.deleteMany({
+            where: { cartId: cart.id, variantId },
+          });
+        }
+
+        const dbCart = await fromDatabase(userId);
+        return NextResponse.json(dbCart || { items: [] }, { status: 200 });
+      }
+    } catch {
+      // fall back to cookie mode
+    }
+  }
+
+  const map = await getCartCookieMap();
+
+  if (payload.action === "increment") {
+    map[payload.key] = (map[payload.key] || 0) + 1;
+  }
+
+  if (payload.action === "decrement") {
+    const current = map[payload.key] || 0;
+    if (current <= 1) {
+      delete map[payload.key];
+    } else {
+      map[payload.key] = current - 1;
+    }
+  }
+
+  if (payload.action === "remove") {
+    delete map[payload.key];
+  }
+
+  await setCartCookieMap(map);
+  return NextResponse.json(fromCookieMap(map), { status: 200 });
+}
+
+export async function DELETE() {
+  const { userId } = await auth();
+
+  if (userId) {
+    try {
+      const dbUser = await prisma.user.findUnique({ where: { clerkId: userId }, select: { id: true } });
+      if (dbUser) {
+        const cart = await prisma.cart.findUnique({ where: { userId: dbUser.id }, select: { id: true } });
+        if (cart) {
+          await prisma.cartItem.deleteMany({ where: { cartId: cart.id } });
+        }
+      }
+    } catch {
+      // Ignore DB clear errors and still clear cookie fallback cart.
+    }
+  }
+
+  await setCartCookieMap({});
+  return NextResponse.json({ items: [] }, { status: 200 });
+}

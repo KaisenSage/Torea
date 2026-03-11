@@ -1,0 +1,265 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  CUSTOMER
+  ADMIN
+}
+
+enum OrderStatus {
+  DRAFT
+  PENDING_PAYMENT
+  PAID
+  FULFILLING
+  SHIPPED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentProvider {
+  PAYSTACK
+}
+
+enum PaymentStatus {
+  INITIATED
+  SUCCESS
+  FAILED
+  ABANDONED
+}
+
+enum ShippingMethod {
+  STANDARD
+}
+
+enum InventoryMovementType {
+  SALE
+  RESTOCK
+  MANUAL_ADJUSTMENT
+}
+
+model User {
+  id          String    @id @default(cuid())
+  clerkId     String    @unique
+  email       String    @unique
+  firstName   String?
+  lastName    String?
+  role        Role      @default(CUSTOMER)
+  carts       Cart[]
+  orders      Order[]
+  addresses   Address[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Product {
+  id          String              @id @default(cuid())
+  slug        String              @unique
+  name        String
+  description String?
+  isActive    Boolean             @default(true)
+  category    String?
+  subcategory String?
+  material    String?
+  careInstructions String?
+  keyFeatures Json?
+  availableSizes Json?
+  availableColors Json?
+  stockTotal  Int                 @default(0)
+  variants    ProductVariant[]
+  images      ProductImage[]
+  collections CollectionProduct[]
+  orderItems  OrderItem[]
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+}
+
+model ProductVariant {
+  id                 String               @id @default(cuid())
+  productId          String
+  product            Product              @relation(fields: [productId], references: [id], onDelete: Cascade)
+  sku                String               @unique
+  size               String?
+  color              String?
+  priceKobo          Int
+  stock              Int                  @default(0)
+  allowBackorder     Boolean              @default(false)
+  cartItems          CartItem[]
+  orderItems         OrderItem[]
+  inventoryMovements InventoryMovement[]
+  images             ProductImage[]
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+}
+
+model ProductImage {
+  id                String          @id @default(cuid())
+  productId         String
+  product           Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  variantId         String?
+  variant           ProductVariant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
+  cloudflareImageId String
+  alt               String?
+  sortOrder         Int             @default(0)
+  createdAt         DateTime        @default(now())
+}
+
+model Collection {
+  id          String              @id @default(cuid())
+  slug        String              @unique
+  name        String
+  description String?
+  products    CollectionProduct[]
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+}
+
+model CollectionProduct {
+  collectionId String
+  productId    String
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  product      Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@id([collectionId, productId])
+}
+
+model Cart {
+  id        String     @id @default(cuid())
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@unique([userId])
+}
+
+model CartItem {
+  id        String         @id @default(cuid())
+  cartId    String
+  cart      Cart           @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  variantId String
+  variant   ProductVariant @relation(fields: [variantId], references: [id], onDelete: Restrict)
+  quantity  Int            @default(1)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  @@unique([cartId, variantId])
+}
+
+model Address {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  label      String?
+  fullName   String
+  phone      String
+  line1      String
+  line2      String?
+  city       String
+  state      String
+  lga        String?
+  postalCode String?
+  country    String   @default("NG")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Order {
+  id                String             @id @default(cuid())
+  orderNumber       String             @unique
+  userId            String
+  user              User               @relation(fields: [userId], references: [id], onDelete: Restrict)
+  status            OrderStatus        @default(PENDING_PAYMENT)
+  subtotalKobo      Int
+  shippingFeeKobo   Int
+  totalKobo         Int
+  currency          String             @default("NGN")
+  shippingMethod    ShippingMethod     @default(STANDARD)
+  shippingFullName  String
+  shippingPhone     String
+  shippingLine1     String
+  shippingLine2     String?
+  shippingCity      String
+  shippingState     String
+  shippingLga       String?
+  shippingCountry   String             @default("NG")
+  paidAt            DateTime?
+  items             OrderItem[]
+  payment           PaymentTransaction?
+  inventoryMoves    InventoryMovement[]
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+}
+
+model OrderItem {
+  id             String         @id @default(cuid())
+  orderId        String
+  order          Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId      String
+  product        Product        @relation(fields: [productId], references: [id], onDelete: Restrict)
+  variantId      String
+  variant        ProductVariant @relation(fields: [variantId], references: [id], onDelete: Restrict)
+  quantity       Int
+  unitPriceKobo  Int
+  totalPriceKobo Int
+
+  @@index([orderId])
+}
+
+model DiscountCode {
+  id                String   @id @default(cuid())
+  code              String   @unique
+  isActive          Boolean  @default(true)
+  percentOff        Int?
+  amountOffKobo     Int?
+  startsAt          DateTime?
+  endsAt            DateTime?
+  usageLimit        Int?
+  usedCount         Int      @default(0)
+  minimumOrderKobo  Int?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model PaymentTransaction {
+  id              String          @id @default(cuid())
+  provider        PaymentProvider
+  reference       String          @unique
+  amountKobo      Int
+  status          PaymentStatus   @default(INITIATED)
+  orderId         String          @unique
+  order           Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  gatewayResponse Json?
+  verifiedAt      DateTime?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+model InventoryMovement {
+  id            String                @id @default(cuid())
+  variantId     String
+  variant       ProductVariant        @relation(fields: [variantId], references: [id], onDelete: Restrict)
+  type          InventoryMovementType
+  quantityDelta Int
+  reason        String?
+  orderId       String?
+  order         Order?                @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  createdAt     DateTime              @default(now())
+}
+
+model WebhookEvent {
+  id          String   @id @default(cuid())
+  provider    String
+  eventId     String
+  payload     Json?
+  processedAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+
+  @@unique([provider, eventId])
+}
