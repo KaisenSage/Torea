@@ -4,6 +4,7 @@ import { GFS_Didot } from "next/font/google";
 import { Header } from "@/components/header/Header";
 import { InstagramContactButton } from "@/components/ui/InstagramContactButton";
 import "./globals.css";
+import "../styles/scroll-appear.css";
 
 const didotSans = GFS_Didot({
   variable: "--font-inter",

@@ -1,0 +1,22 @@
+@keyframes appear {
+  0% {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.appear-on-scroll {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.6s, transform 0.6s;
+}
+
+.appear-on-scroll.appeared {
+  opacity: 1;
+  transform: translateY(0);
+  animation: appear 0.6s ease-out;
+}

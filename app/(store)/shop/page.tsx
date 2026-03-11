@@ -164,17 +164,25 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
       ? "Tops"
       : selectedCategory === "bottoms"
         ? "Bottoms"
-        : sort === "price-asc"
-          ? "New Arrivals"
-        : "All Products";
+        : selectedCategory === "two piece"
+          ? "Two Piece"
+          : selectedCategory === "jumpsuits"
+            ? "Jumpsuits"
+            : sort === "price-asc"
+              ? "New Arrivals"
+              : "All Products";
   const pageDescription =
     selectedCategory === "tops"
-      ? "Shop tops pulled directly from your Google Sheet catalog."
+      ? "Browse our catalog"
       : selectedCategory === "bottoms"
-        ? "Shop bottoms pulled directly from your Google Sheet catalog."
-        : sort === "price-asc"
+        ? "Browse our catalog"
+        : selectedCategory === "two piece"
           ? "Browse our catalog"
-        : "Browse our catalog";
+          : selectedCategory === "jumpsuits"
+            ? "Browse our catalog"
+            : sort === "price-asc"
+              ? "Browse our catalog"
+              : "Browse our catalog";
   const activeChip = selectedCategory || (sort === "price-asc" ? "new-arrivals" : "all");
 
   const sorted = [...filtered].sort((a, b) => {
@@ -231,6 +239,8 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
           { key: "new-arrivals", label: "New Arrivals", href: buildShopHref("", "price-asc", params.q || "") },
           { key: "tops", label: "Tops", href: buildShopHref("tops", sort, params.q || "") },
           { key: "bottoms", label: "Bottoms", href: buildShopHref("bottoms", sort, params.q || "") },
+          { key: "two-piece", label: "Two Piece", href: buildShopHref("two piece", sort, params.q || "") },
+          { key: "jumpsuits", label: "Jumpsuits", href: buildShopHref("jumpsuits", sort, params.q || "") },
         ].map((chip) => (
           <a
             key={chip.key}
@@ -258,6 +268,8 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
           <option value="">All sections</option>
           <option value="tops">Tops</option>
           <option value="bottoms">Bottoms</option>
+          <option value="two piece">Two Piece</option>
+          <option value="jumpsuits">Jumpsuits</option>
         </select>
 
         <select name="sort" defaultValue={sort} className="rounded-lg border border-zinc-200 px-3 py-2 text-sm">

@@ -11,6 +11,8 @@ const shopLinks = [
   { href: "/shop?sort=price-asc", label: "New Arrivals" },
   { href: "/shop?category=tops&sort=latest", label: "Tops" },
   { href: "/shop?category=bottoms&sort=latest", label: "Bottoms" },
+  { href: "/shop?category=two%20piece&sort=latest", label: "Two Piece" },
+  { href: "/shop?category=jumpsuits&sort=latest", label: "Jumpsuit" },
 ];
 
 function Icon({ children }: { children: React.ReactNode }) {
