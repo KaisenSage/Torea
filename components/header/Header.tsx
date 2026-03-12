@@ -218,6 +218,19 @@ export function Header() {
           </nav>
 
           <div className="flex items-center gap-2 md:hidden">
+            {/* cart icon always visible on mobile */}
+            <Link href="/cart" className="relative" aria-label="Cart">
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full transition hover:bg-black/5">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="stroke-black/80">
+                  <path d="M6 8h12l-1 13H7L6 8Z" strokeWidth="1.5" strokeLinejoin="round" />
+                  <path d="M9 8a3 3 0 0 1 6 0" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+              </span>
+              <span className="absolute -right-1 -top-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-black px-1 text-[11px] leading-none text-white">
+                {cartCount}
+              </span>
+            </Link>
+
             <button
               onClick={() => setOpen(true)}
               aria-label="Open menu"
