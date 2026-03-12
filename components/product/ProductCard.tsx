@@ -5,6 +5,13 @@ import Image from "next/image";
 import { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 
+type ProductVariant = {
+  id: string;
+  size: string | null;
+  color: string | null;
+  stock: number;
+};
+
 type ProductCardProps = {
   slug: string;
   name: string;
@@ -12,16 +19,23 @@ type ProductCardProps = {
   imageUrl: string;
   cartKey: string;
   canAdd?: boolean;
+  sizes?: string[];
+  colors?: string[];
+  variants?: ProductVariant[];
+  totalStock?: number;
+  fallbackEnabled?: boolean;
 };
 
-export function ProductCard({
-  slug,
-  name,
-  priceKobo,
-  imageUrl,
-  cartKey,
-  canAdd = true,
-}: ProductCardProps) {
+export function ProductCard(props: ProductCardProps) {
+  const {
+    slug,
+    name,
+    priceKobo,
+    imageUrl,
+    cartKey,
+    canAdd = true,
+    // ...existing code...
+  } = props;
   const reducedMotion = useReducedMotion();
   const [isAdding, setIsAdding] = useState(false);
   const [added, setAdded] = useState(false);
@@ -89,14 +103,14 @@ export function ProductCard({
           }
           className="absolute right-2 top-2 z-30 inline-flex h-8 w-8 items-center justify-center rounded-full bg-black text-white opacity-100 shadow-sm transition hover:scale-105 disabled:cursor-not-allowed disabled:bg-zinc-500 sm:right-3 sm:top-3 sm:h-9 sm:w-9 lg:-right-4 lg:top-4 lg:opacity-0 lg:group-hover:opacity-100 lg:group-focus-within:opacity-100"
         >
-          {!canAdd ? (
+          {added || isAdding ? (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="stroke-white">
+              <path d="m5 12 5 5 9-9" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          ) : !canAdd ? (
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="stroke-white">
               <path d="M6 6l12 12" strokeWidth="1.8" strokeLinecap="round" />
               <path d="M18 6L6 18" strokeWidth="1.8" strokeLinecap="round" />
-            </svg>
-          ) : added ? (
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="stroke-white">
-              <path d="m5 12 5 5 9-9" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           ) : (
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="stroke-white">

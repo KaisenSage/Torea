@@ -174,7 +174,7 @@ export function Header() {
               ) : null}
             </div>
 
-            <Link href="/search" aria-label="Search">
+            <Link href="/shop" aria-label="Search">
               <Icon>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="stroke-black/80">
                   <path d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z" strokeWidth="1.5" />
