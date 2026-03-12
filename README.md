@@ -79,8 +79,7 @@ An ecommerce storefront built with Next.js, tailored for a Nigeria-first fashion
 | `npm run build` | Create production build (Turbopack) |
 | `npm run start` | Run production server locally |
 | `npm run lint` | Run ESLint with TypeScript rules |
-| `npm run format` | (if configured) Format code with Prettier |
-
+| `npm run format` | (if configured) Format code with Prettier || `npm run prisma:generate` | regenerate Prisma client |
 ## 🛠 Code Structure
 
 - `app/` – Next.js app router pages and layout
@@ -89,6 +88,25 @@ An ecommerce storefront built with Next.js, tailored for a Nigeria-first fashion
 - `prisma/` – Prisma schema, migrations, seed script
 - `scripts/` – Utility scripts (e.g. product import)
 - `data/` – Example CSV templates
+
+## 🔐 Authentication & Admin
+
+## ✉️ Email providers
+
+The project supports two transactional email backends:
+
+1. **Resend** (default) – set `RESEND_API_KEY` in `.env`.
+2. **Mailgun SMTP** – if you prefer SMTP or need SMTPUTF8, set the following env vars:
+   ```env
+   MAILGUN_SMTP_HOST=smtp.mailgun.org
+   MAILGUN_SMTP_PORT=587
+   MAILGUN_SMTP_USER=postmaster@your-domain
+   MAILGUN_SMTP_PASS=your-password
+   EMAIL_FROM="Display <no-reply@yourdomain>"
+   ```
+   The code will automatically pick Mailgun when Resend isn’t configured.
+
+Non‑ASCII senders require SMTP UTF8 support and must use Mailgun/SES over SMTP.
 
 ## 🔐 Authentication & Admin
 
