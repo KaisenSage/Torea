@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import ExperienceVideoSection from "@/components/home/ExperienceVideoSection";
 
 const reviews = [
   {
@@ -162,6 +163,8 @@ export default function HomeExperienceSections() {
 
   return (
     <>
+      {/* Experience video section above reviews */}
+      <ExperienceVideoSection />
       <section className="rounded-3xl border border-zinc-200 bg-white px-6 py-8 sm:px-8" aria-labelledby="reviews-title">
         <div className="mb-6 flex items-center justify-between gap-4">
           <h2 id="reviews-title" className="text-2xl font-semibold tracking-tight text-zinc-900">
@@ -201,7 +204,7 @@ export default function HomeExperienceSections() {
           {reviews.map((review) => (
             <article
               key={review.id}
-              className="min-w-[82%] snap-start rounded-2xl border border-zinc-200 bg-zinc-50 p-4 sm:min-w-[48%] lg:min-w-[32%]"
+              className="min-w-[82%] snap-start rounded-2xl border border-zinc-200 bg-amber-50 p-4 sm:min-w-[48%] lg:min-w-[32%]"
             >
               <p className="text-sm leading-6 text-zinc-700">"{review.quote}"</p>
               <p className="mt-4 text-sm font-semibold text-zinc-900">{review.name}</p>

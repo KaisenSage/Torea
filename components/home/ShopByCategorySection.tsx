@@ -33,18 +33,18 @@ export default function ShopByCategorySection() {
   return (
     <section className="mx-auto max-w-6xl py-16 px-4 sm:px-8">
       <div className="mb-8 text-center">
-        <h2 className="text-4xl font-extrabold tracking-tight text-zinc-900 sm:text-5xl">Shop by Category</h2>
+        <h2 className="text-3xl font-extrabold tracking-tight text-zinc-900 sm:text-4xl">SHOP BY CATEGORY</h2>
         <p className="mt-3 text-lg text-zinc-500">Discover our curated styles</p>
       </div>
-      <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-4">
         {categories.map((cat) => (
           <Link
             key={cat.name}
             href={cat.href}
             aria-label={cat.name}
-            className="group block rounded-xl bg-[#f5f5f5] p-8 text-center transition-shadow hover:shadow-2xl focus:outline-none focus:ring-2 focus:ring-black"
+            className="group block rounded-xl bg-[#f5f5f5] p-4 text-center transition-shadow hover:shadow-2xl focus:outline-none focus:ring-2 focus:ring-black"
           >
-            <div className="category-card relative mx-auto w-full h-[260px] overflow-hidden rounded-lg bg-white flex items-center justify-center">
+            <div className="category-card relative mx-auto w-full h-[200px] overflow-hidden rounded-lg bg-white flex items-center justify-center">
               <Image
                 src={cat.img}
                 alt={cat.alt}

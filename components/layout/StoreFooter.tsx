@@ -73,9 +73,9 @@ export function StoreFooter() {
               </Link>
             </li>
             <li>
-              <a href="mailto:hello@torea.store" className="transition hover:text-zinc-900">
-                hello@torea.store
-              </a>
+              <Link href="/refund-policy" className="transition hover:text-zinc-900">
+                Refund &amp; Return Policy
+              </Link>
             </li>
           </ul>
         </div>

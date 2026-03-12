@@ -6,6 +6,8 @@ import { InstagramContactButton } from "@/components/ui/InstagramContactButton";
 import "./globals.css";
 import "../styles/scroll-appear.css";
 
+import ClientHeroVideoWrapper from "@/components/home/ClientHeroVideoWrapper";
+
 const didotSans = GFS_Didot({
   variable: "--font-inter",
   weight: "400",
@@ -36,6 +38,8 @@ export default function RootLayout({
           <div className="min-h-screen bg-background text-foreground">
             <Header />
             <InstagramContactButton />
+            {/* Video hero background below header, only on homepage */}
+            <ClientHeroVideoWrapper />
             <main className="mx-auto max-w-6xl px-4 pt-8 sm:px-6">{children}</main>
           </div>
         </ClerkProvider>
