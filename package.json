@@ -5,14 +5,15 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
     "prisma:seed": "node --env-file=.env.local prisma/seed.mjs",
-    "products:import": "node scripts/import-products.mjs"
+    "products:import": "node scripts/import-products.mjs",
+    "postinstall": "prisma generate"
   },
   "prisma": {
     "seed": "node --env-file=.env.local prisma/seed.mjs"

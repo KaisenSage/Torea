@@ -50,13 +50,13 @@ export async function requireSignedInUser() {
 
 export async function requireAdmin() {
   const dbUser = await requireSignedInUser();
-  const adminEmail = process.env.ADMIN_EMAIL;
+  const adminEmails = (process.env.ADMIN_EMAIL || "").split(",").map((s) => s.trim()).filter(Boolean);
   console.log("requireAdmin debug: dbUser.email=", dbUser.email);
-  console.log("requireAdmin debug: adminEmail=", adminEmail);
+  console.log("requireAdmin debug: adminEmails=", adminEmails);
 
   if (
     dbUser.role !== Role.ADMIN &&
-    (!adminEmail || dbUser.email !== adminEmail)
+    (adminEmails.length === 0 || !adminEmails.includes(dbUser.email))
   ) {
     throw new Error("Forbidden");
   }

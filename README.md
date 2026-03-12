@@ -31,6 +31,8 @@ An ecommerce storefront built with Next.js, tailored for a Nigeria-first fashion
    cd torea
    ```
 
+   > **Important:** we run `prisma generate` during install/build to ensure the client is up to date (Vercel caching needs it).
+
 2. **Install dependencies**
    ```bash
    npm install
@@ -47,7 +49,8 @@ An ecommerce storefront built with Next.js, tailored for a Nigeria-first fashion
    PAYSTACK_PUBLIC_KEY=...
    CLERK_SECRET_KEY=...
    CLERK_PUBLISHABLE_KEY=...
-   ADMIN_EMAIL=admin@example.com
+   # Comma-separated list of emails allowed to act as admin (Clerk accounts).
+   ADMIN_EMAIL=admin@example.com,other@domain.com
    # Optional: transactional email service (Resend.com)
    RESEND_API_KEY=...
    ```
