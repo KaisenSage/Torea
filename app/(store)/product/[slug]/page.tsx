@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { FaFacebook, FaTwitter, FaWhatsapp } from "react-icons/fa";
 import { notFound } from "next/navigation";
 import { prisma } from "@/server/db/prisma";
 import { ProductVariantPurchase } from "@/components/product/ProductVariantPurchase";
@@ -18,6 +17,7 @@ type ProductPageVariant = {
 };
 
 type ProductRecord = {
+  id: string;
   name: string;
   description: string | null;
   category: string | null;
@@ -47,18 +47,8 @@ function shouldHideFeature(value: string) {
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
-    // Recently viewed products (client-side only)
-    let recentlyViewed: any[] = [];
-    if (typeof window !== "undefined") {
-      const viewed = JSON.parse(localStorage.getItem("recentlyViewed") || "[]");
-      if (!viewed.find((p: any) => p.slug === slug)) {
-        viewed.unshift({ slug, name: product?.name, image: heroImage });
-        if (viewed.length > 5) viewed.pop();
-        localStorage.setItem("recentlyViewed", JSON.stringify(viewed));
-      }
-      recentlyViewed = viewed.filter((p: any) => p.slug !== slug);
-    }
   const { slug } = await params;
+
   let product: ProductRecord | null = null;
 
   try {
@@ -91,6 +81,20 @@ export default async function ProductPage({ params }: ProductPageProps) {
       : "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1200&auto=format&fit=crop";
   const imageAlt = product?.name || "TORÉA product";
 
+  // Recently viewed products (client-side only)
+  type ViewedProduct = { slug: string; name: string; image: string };
+
+  let recentlyViewed: ViewedProduct[] = [];
+  if (typeof window !== "undefined") {
+    const viewed: ViewedProduct[] = JSON.parse(localStorage.getItem("recentlyViewed") || "[]");
+    if (!viewed.find((p) => p.slug === slug)) {
+      viewed.unshift({ slug, name: product?.name || "", image: heroImage });
+      if (viewed.length > 5) viewed.pop();
+      localStorage.setItem("recentlyViewed", JSON.stringify(viewed));
+    }
+    recentlyViewed = viewed.filter((p) => p.slug !== slug);
+  }
+
   const sizes = Array.from(
     new Set([
       ...(Array.isArray(product.availableSizes) ? product.availableSizes.map((size: unknown) => String(size)) : []),
@@ -116,7 +120,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     Boolean(subcategory) && category.toLowerCase() !== subcategory.toLowerCase();
 
   // Fetch recommendations
-  let recommendations: any[] = [];
+  let recommendations: Array<{ id: string; slug: string; images?: Array<{ cloudflareImageId: string }>; name: string; variants?: Array<{ priceKobo: number }> }> = [];
   try {
     const recommendationsRes = await fetch(
       `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/products/recommendations?productId=${product.id}`,
@@ -214,7 +218,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         <div className="mt-10">
           <h2 className="text-xl font-semibold mb-4">Recently viewed</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {recentlyViewed.map((p: any) => (
+            {recentlyViewed.map((p) => (
               <Link key={p.slug} href={`/product/${p.slug}`} className="block">
                 <div className="aspect-[4/5] overflow-hidden rounded-xl bg-zinc-100">
                   <Image src={p.image} alt={p.name} width={120} height={150} className="object-cover w-full h-full" />

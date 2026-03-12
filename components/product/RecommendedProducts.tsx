@@ -1,7 +1,15 @@
 import Image from "next/image";
 import Link from "next/link";
 
-export default function RecommendedProducts({ products }) {
+type ProductItem = {
+  id: string;
+  slug: string;
+  name: string;
+  images?: Array<{ cloudflareImageId: string }>;
+  variants?: Array<{ priceKobo: number }>;
+};
+
+export default function RecommendedProducts({ products }: { products: ProductItem[] }) {
   if (!products || products.length === 0) return null;
 
   return (

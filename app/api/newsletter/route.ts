@@ -38,6 +38,12 @@ export async function POST(req: Request) {
       ON CONFLICT (email) DO NOTHING;
     `;
 
+    // send welcome email via Resend if configured
+    try {
+      const { sendNewsletterWelcome } = await import("@/server/services/email");
+      await sendNewsletterWelcome(email);
+    } catch {}
+
     return NextResponse.json(
       { ok: true, message: "Subscription successful. You will hear from us soon." },
       { status: 200 },

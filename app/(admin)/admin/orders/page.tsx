@@ -1,4 +1,5 @@
 import { listAdminOrders } from "@/server/actions/admin-orders";
+import { OrderStatus } from "@prisma/client";
 
 export default async function AdminOrdersPage() {
   const orders = await listAdminOrders();
@@ -27,7 +28,7 @@ export default async function AdminOrdersPage() {
                   ₦{(order.totalKobo / 100).toLocaleString("en-NG", { minimumFractionDigits: 2 })}
                 </td>
                 <td className="px-4 py-3">{order.status}</td>
-                <td className="px-4 py-3">{order.status === "PENDING" ? "Yes" : "No"}</td>
+                <td className="px-4 py-3">{order.status === OrderStatus.PENDING_PAYMENT ? "Yes" : "No"}</td>
                 <td className="px-4 py-3">{new Date(order.createdAt).toLocaleString()}</td>
               </tr>
             ))}

@@ -1,6 +1,5 @@
 import FeaturedProductsSection from "@/components/featured/FeaturedProductsSection";
 import HomeExperienceSections from "@/components/home/HomeExperienceSections";
-import Link from "next/link";
 import ShopByCategorySection from "@/components/home/ShopByCategorySection";
 import { AppearOnScroll } from "@/components/AppearOnScroll";
 import { prisma } from "@/server/db/prisma";
@@ -48,7 +47,7 @@ export default async function StoreHomePage() {
     <div className="space-y-12 pb-16">
       <AppearOnScroll>
         <div className="appear-on-scroll">
-          <ShopByCategorySection luxury />
+          <ShopByCategorySection />
         </div>
       </AppearOnScroll>
 

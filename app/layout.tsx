@@ -23,7 +23,6 @@ const didotDisplay = GFS_Didot({
 export const metadata: Metadata = {
   title: "TOREA Fashion",
   description: "Nigeria-first fashion storefront with secure Paystack checkout",
-  appleMobileWebAppTitle: "TORÉA",
 };
 
 export default function RootLayout({

@@ -1,4 +1,4 @@
-require('dotenv').config();
+import 'dotenv/config';
 console.log("Startup test: ADMIN_EMAIL=", process.env.ADMIN_EMAIL);
 console.log("Startup test: ADMIN_EMAIL=", process.env.ADMIN_EMAIL);
 import { Role } from "@prisma/client";

@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { FaInstagram, FaWhatsapp, FaTiktok, FaEnvelope } from "react-icons/fa";
 
 const quickLinks = [

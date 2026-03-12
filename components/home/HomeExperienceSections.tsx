@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import ExperienceVideoSection from "@/components/home/ExperienceVideoSection";
 
@@ -206,7 +205,7 @@ export default function HomeExperienceSections() {
               key={review.id}
               className="min-w-[82%] snap-start rounded-2xl border border-zinc-200 bg-amber-50 p-4 sm:min-w-[48%] lg:min-w-[32%]"
             >
-              <p className="text-sm leading-6 text-zinc-700">"{review.quote}"</p>
+              <p className="text-sm leading-6 text-zinc-700">&quot;{review.quote}&quot;</p>
               <p className="mt-4 text-sm font-semibold text-zinc-900">{review.name}</p>
               <p className="text-xs uppercase tracking-[0.14em] text-zinc-500">{review.city}</p>
             </article>
