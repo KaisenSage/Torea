@@ -12,16 +12,25 @@ type ProductItem = {
 export default function RecommendedProducts({ products }: { products: ProductItem[] }) {
   if (!products || products.length === 0) return null;
 
+  const filteredProducts = products.filter((product) => product.name.toLowerCase() !== "bum covers");
+
   return (
     <div className="mt-20">
       <h2 className="text-2xl font-semibold mb-6">You may also like</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
-        {products.map((product) => (
+        {filteredProducts.map((product) => (
           <Link key={product.id} href={`/product/${product.slug}`} className="group block">
             <div className="aspect-[4/5] overflow-hidden rounded-xl bg-zinc-100">
               {product.images?.[0]?.cloudflareImageId ? (
                 <Image
-                  src={`https://imagedelivery.net/${process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH}/${product.images[0].cloudflareImageId}/public`}
+                  src={
+                    product.images[0].cloudflareImageId.startsWith("http://") ||
+                    product.images[0].cloudflareImageId.startsWith("https://")
+                      ? product.images[0].cloudflareImageId
+                      : process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH
+                        ? `https://imagedelivery.net/${process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH}/${product.images[0].cloudflareImageId}/public`
+                        : "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1200&auto=format&fit=crop"
+                  }
                   alt={product.name}
                   width={220}
                   height={275}

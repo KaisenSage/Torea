@@ -16,7 +16,7 @@ type ProductCardProps = {
   slug: string;
   name: string;
   priceKobo: number;
-  imageUrl: string;
+  imageUrls: string[]; // array of images
   cartKey: string;
   canAdd?: boolean;
   sizes?: string[];
@@ -24,48 +24,51 @@ type ProductCardProps = {
   variants?: ProductVariant[];
   totalStock?: number;
   fallbackEnabled?: boolean;
+  images?: Array<{ imageUrl: string; r2Url?: string; cloudflareImageId?: string } | string>;
 };
 
 export function ProductCard(props: ProductCardProps) {
-  const {
-    slug,
-    name,
-    priceKobo,
-    imageUrl,
-    cartKey,
-    canAdd = true,
-    // ...existing code...
-  } = props;
+  const { slug, name, priceKobo, cartKey, canAdd = true, colors } = props;
+  // Use product.images (from DB) or imageUrls prop for dynamic images
+  let imageUrls: string[] = [];
+  // @ts-ignore: If images are attached to the product, use them
+  if (props.images && Array.isArray(props.images) && props.images.length > 0) {
+    imageUrls = props.images
+      .map((img: { imageUrl: string; r2Url?: string; cloudflareImageId?: string } | string) => {
+        if (typeof img === "string") return img;
+        if (props.name && props.name.toLowerCase().includes("charme set") && img.r2Url) {
+          return img.r2Url;
+        }
+        return img.cloudflareImageId
+          ? `https://imagedelivery.net/${process.env.NEXT_PUBLIC_CLOUDFLARE_IMAGES_ACCOUNT_HASH || process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH}/${img.cloudflareImageId}/public`
+          : img.imageUrl;
+      })
+      .filter(Boolean);
+  } else if (props.imageUrls && props.imageUrls.length > 0) {
+    imageUrls = props.imageUrls;
+  }
   const reducedMotion = useReducedMotion();
   const [isAdding, setIsAdding] = useState(false);
   const [added, setAdded] = useState(false);
+  const [currentImage, setCurrentImage] = useState(0);
 
   async function handleAddToCart(event: React.MouseEvent<HTMLButtonElement>) {
     event.preventDefault();
     event.stopPropagation();
-
-    if (!canAdd || isAdding) {
-      return;
-    }
+    if (!canAdd || isAdding) return;
 
     try {
       setIsAdding(true);
-
       const response = await fetch("/api/cart", {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ key: cartKey, action: "increment" }),
       });
-
-      if (!response.ok) {
-        return;
-      }
+      if (!response.ok) return;
 
       setAdded(true);
       window.dispatchEvent(new Event("cart:updated"));
-      window.setTimeout(() => setAdded(false), 1400);
+      setTimeout(() => setAdded(false), 1400);
     } finally {
       setIsAdding(false);
     }
@@ -78,16 +81,20 @@ export function ProductCard(props: ProductCardProps) {
       transition={{ duration: 0.2 }}
     >
       <div className="relative aspect-[3/4]">
-        <div className="relative h-full w-full overflow-hidden">
-          <Link href={`/product/${slug}`} className="absolute inset-0 z-10" aria-label={`Open ${name}`} />
+        <Link href={`/product/${slug}`} className="absolute inset-0 z-10" aria-label={`Open ${name}`} />
+        {/* Main Image */}
+        {imageUrls.length > 0 && imageUrls[currentImage] ? (
           <Image
-            src={imageUrl}
+            src={imageUrls[currentImage]}
             alt={name}
             fill
             className="object-cover transition duration-500 group-hover:scale-105"
           />
-        </div>
-
+        ) : null}
+        {/* Hide thumbnails for Luxe Set, Elevate Jacket Short Hand, Elevate Jacket Long Hands, Peak Fit, Aero Sculpt Jumpsuit in product card */}
+        {/* Left-side vertical thumbnail grid removed as requested */}
+        {/* All thumbnails removed from product card. Only main image is shown in product grid/shop/category. */}
+        {/* Add to Cart Button */}
         <button
           type="button"
           onClick={handleAddToCart}
@@ -101,7 +108,7 @@ export function ProductCard(props: ProductCardProps) {
                   ? `${name} added to cart`
                   : `Add ${name} to cart`
           }
-          className="absolute right-2 top-2 z-30 inline-flex h-8 w-8 items-center justify-center rounded-full bg-black text-white opacity-100 shadow-sm transition hover:scale-105 disabled:cursor-not-allowed disabled:bg-zinc-500 sm:right-3 sm:top-3 sm:h-9 sm:w-9 lg:-right-4 lg:top-4 lg:opacity-0 lg:group-hover:opacity-100 lg:group-focus-within:opacity-100"
+          className="absolute right-2 top-2 z-30 inline-flex h-8 w-8 items-center justify-center rounded-full bg-black text-white shadow-sm transition hover:scale-105 disabled:cursor-not-allowed disabled:bg-zinc-500 sm:right-3 sm:top-3 sm:h-9 sm:w-9 lg:-right-4 lg:top-4 lg:opacity-0 lg:group-hover:opacity-100 lg:group-focus-within:opacity-100"
         >
           {added || isAdding ? (
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="stroke-white">
@@ -121,6 +128,7 @@ export function ProductCard(props: ProductCardProps) {
         </button>
       </div>
 
+      {/* Product Info */}
       <Link href={`/product/${slug}`} className="block">
         <div className="space-y-1 p-4">
           <h3 className="font-semibold text-zinc-900">{name}</h3>

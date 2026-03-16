@@ -1,7 +1,58 @@
 "use client";
 
+// Placeholder for Luxe Set color-to-image mapping
+const luxeSetImages: Record<string, string> = {};
+// Elevate Jacket (short hand) color-to-image mapping
+const elevateJacketShortHandImages: Record<string, string> = {
+  "baby pink": "https://your.cloudflare.url/f9e5c3f0-091c-4f3a-203a-96be40c82000",
+  "light blue": "https://your.cloudflare.url/b93f1dbf-b6b9-4454-5b51-9dc8aa6cde00",
+  "grey": "https://your.cloudflare.url/701b8248-5424-4e7d-adda-134d80e09900",
+  "nude": "https://your.cloudflare.url/0bb2a142-2a4e-4b75-2549-f5b668ffdb00",
+  "black": "https://your.cloudflare.url/a6a9439e-38b5-49c2-0d45-c6b065770d00"
+};
+
+// Charme Set color-to-image mapping
+const charmeSetImages: Record<string, string> = {
+  grey: "https://pub-bd618a9723f54128a9dbd24698f83fba.r2.dev/cloth%20torea/IMG_0805.PNG",
+  black: "https://pub-bd618a9723f54128a9dbd24698f83fba.r2.dev/cloth%20torea/IMG_0671.PNG",
+  wine: "https://pub-bd618a9723f54128a9dbd24698f83fba.r2.dev/cloth%20torea/IMG_0681.PNG",
+};
+
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
+
+export default function CheckoutPage() {
+  function formatNaira(priceKobo: number) {
+    return `₦${(priceKobo / 100).toLocaleString("en-NG", { minimumFractionDigits: 2 })}`;
+  }
+  const [addressLine1, setAddressLine1] = useState("");
+  const [addressLine2, setAddressLine2] = useState("");
+  const [city, setCity] = useState("");
+  const [phone, setPhone] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const [isLoadingItems, setIsLoadingItems] = useState(true);
+  const [missingPaystackVars, setMissingPaystackVars] = useState<string[]>([]);
+  const [lastName, setLastName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [marketing, setMarketing] = useState(false);
+  const [emailOrPhone, setEmailOrPhone] = useState("");
+  const [paystackReady, setPaystackReady] = useState<boolean | null>(null);
+  const [items, setItems] = useState<CartItem[]>([]);
+  const [selectedShipping, setSelectedShipping] = useState("lag-mainland");
+  const [saveInfo, setSaveInfo] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("torea_checkout_save");
+      setSaveInfo(saved === "true");
+    }
+  }, []);
+  const [state, setState] = useState("Lagos");
+  const [deliveryType, setDeliveryType] = useState<"ship" | "pickup">("ship");
+  // Fix ReferenceError: discountCode is not defined
+  const [discountCode, setDiscountCode] = useState("");
 
 type CartItem = {
   key: string;
@@ -13,21 +64,13 @@ type CartItem = {
   imageUrl: string;
 };
 
-type ShippingOption = {
-  id: string;
-  label: string;
-  eta: string;
-  priceKobo: number;
-};
-
-const lagosOptions: ShippingOption[] = [
+const lagosOptions = [
   { id: "lag-mainland", label: "Lagos Mainland", eta: "Takes 24-48 working hours", priceKobo: 450000 },
   { id: "lag-island", label: "Lagos Island", eta: "Takes 24-48 working hours", priceKobo: 500000 },
   { id: "lag-tier", label: "Lagos Tier 2", eta: "Takes 48-72 working hours", priceKobo: 550000 },
   { id: "lag-outskirts", label: "Lagos Outskirts", eta: "Takes 48-72 working hours", priceKobo: 600000 },
 ];
-
-const regionalOptions: ShippingOption[] = [
+const regionalOptions = [
   { id: "sw", label: "South West", eta: "Takes 2-3 working days", priceKobo: 650000 },
   { id: "se", label: "South East", eta: "Takes 2-4 working days", priceKobo: 700000 },
   { id: "ss", label: "South South", eta: "Takes 2-4 working days", priceKobo: 700000 },
@@ -35,7 +78,6 @@ const regionalOptions: ShippingOption[] = [
   { id: "ne", label: "North East", eta: "Takes 3-6 working days", priceKobo: 950000 },
   { id: "nw", label: "North West", eta: "Takes 3-6 working days", priceKobo: 950000 },
 ];
-
 const states = [
   "Lagos",
   "Abuja (FCT)",
@@ -49,99 +91,32 @@ const states = [
   "Anambra",
 ];
 
-function formatNaira(amountKobo: number) {
-  return `₦${(amountKobo / 100).toLocaleString("en-NG", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-}
-
-export default function CheckoutPage() {
-  const [paystackReady, setPaystackReady] = useState<boolean | null>(null);
-  const [missingPaystackVars, setMissingPaystackVars] = useState<string[]>([]);
-  const [items, setItems] = useState<CartItem[]>([]);
-  const [isLoadingItems, setIsLoadingItems] = useState(true);
-  const [deliveryType, setDeliveryType] = useState<"ship" | "pickup">("ship");
-  const [state, setState] = useState("Lagos");
-  const [selectedShipping, setSelectedShipping] = useState("lag-mainland");
-  const [discountCode, setDiscountCode] = useState("");
-  const [discountApplied, setDiscountApplied] = useState(false);
-  const [saveInfo, setSaveInfo] = useState(() => {
-    if (typeof window === "undefined") {
-      return false;
-    }
-
-    return localStorage.getItem("torea_checkout_save") === "true";
-  });
-  const [marketing, setMarketing] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [checkoutError, setCheckoutError] = useState<string | null>(null);
-
-  const [emailOrPhone, setEmailOrPhone] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [addressLine1, setAddressLine1] = useState("");
-  const [addressLine2, setAddressLine2] = useState("");
-  const [city, setCity] = useState("");
-  const [phone, setPhone] = useState("");
-
-  const shippingOptions = useMemo(
-    () => (state.toLowerCase() === "lagos" ? lagosOptions : regionalOptions),
-    [state],
-  );
+  const shippingOptions = useMemo(() => {
+    const lagosOptions = [
+      { id: "lag-mainland", label: "Lagos Mainland", eta: "Takes 24-48 working hours", priceKobo: 450000 },
+      { id: "lag-island", label: "Lagos Island", eta: "Takes 24-48 working hours", priceKobo: 500000 },
+      { id: "lag-tier", label: "Lagos Tier 2", eta: "Takes 48-72 working hours", priceKobo: 550000 },
+      { id: "lag-outskirts", label: "Lagos Outskirts", eta: "Takes 48-72 working hours", priceKobo: 600000 },
+    ];
+    const regionalOptions = [
+      { id: "sw", label: "South West", eta: "Takes 2-3 working days", priceKobo: 650000 },
+      { id: "se", label: "South East", eta: "Takes 2-4 working days", priceKobo: 700000 },
+      { id: "ss", label: "South South", eta: "Takes 2-4 working days", priceKobo: 700000 },
+      { id: "nc", label: "North Central", eta: "Takes 3-5 working days", priceKobo: 850000 },
+    ];
+    return state.toLowerCase() === "lagos" ? lagosOptions : regionalOptions;
+  }, [state]);
   const displayedShippingOptions =
     deliveryType === "pickup"
       ? [{ id: "pickup", label: "Store Pickup", eta: "Ready in 24 working hours", priceKobo: 0 }]
-      : shippingOptions;
-
+      : regionalOptions;
+  // ...existing code...
   useEffect(() => {
     let mounted = true;
-
-    async function loadRuntimeStatus() {
-      try {
-        const response = await fetch("/api/system/runtime", { cache: "no-store" });
-        if (!response.ok) {
-          return;
-        }
-
-        const data = (await response.json()) as {
-          paystack?: {
-            configured?: boolean;
-            missing?: string[];
-          };
-        };
-
-        if (mounted) {
-          const configured = data.paystack?.configured ?? false;
-          setPaystackReady(configured);
-          setMissingPaystackVars(data.paystack?.missing || []);
-        }
-      } catch {
-        if (mounted) {
-          setPaystackReady(false);
-          setMissingPaystackVars(["Unable to read runtime config"]);
-        }
-      }
-    }
-
-    void loadRuntimeStatus();
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("torea_checkout_save", String(saveInfo));
-  }, [saveInfo]);
-
-  useEffect(() => {
-    let mounted = true;
-
     async function loadCart() {
+      setIsLoadingItems(true);
       try {
-        const response = await fetch("/api/cart", { cache: "no-store" });
-        if (!response.ok) {
-          return;
-        }
-
+        const response = await fetch("/api/cart");
         const data = (await response.json()) as { items: CartItem[] };
         if (mounted) {
           setItems(data.items || []);
@@ -152,9 +127,7 @@ export default function CheckoutPage() {
         }
       }
     }
-
     void loadCart();
-
     return () => {
       mounted = false;
     };
@@ -167,6 +140,8 @@ export default function CheckoutPage() {
   const subtotalKobo = items.reduce((sum, item) => sum + item.priceKobo * item.quantity, 0);
   const selectedShippingOption = displayedShippingOptions.find((option) => option.id === selectedShippingId);
   const shippingFeeKobo = deliveryType === "pickup" ? 0 : (selectedShippingOption?.priceKobo || 0);
+    // Fix ReferenceError: discountApplied is not defined
+    const discountApplied = !!discountCode;
   const discountKobo = discountApplied ? Math.round(subtotalKobo * 0.05) : 0;
   const totalKobo = subtotalKobo + shippingFeeKobo - discountKobo;
   const taxKobo = Math.round(totalKobo * 0.075);
@@ -489,8 +464,60 @@ export default function CheckoutPage() {
               <div key={item.key} className="flex items-start justify-between gap-3">
                 <div className="flex items-start gap-3">
                   <div className="relative h-16 w-14 overflow-hidden rounded-md border border-zinc-200 bg-zinc-100">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={item.imageUrl} alt={item.name} className="h-full w-full object-cover" />
+                    {(() => {
+                      let src = "";
+                      const colorNorm = item.color?.toLowerCase() || "";
+                      if (item.name.toLowerCase().includes("charme set") && charmeSetImages[colorNorm]) {
+                        src = charmeSetImages[colorNorm];
+                      } else if (item.name.toLowerCase().includes("elevate jacket (short hand)") && elevateJacketShortHandImages[colorNorm]) {
+                        src = elevateJacketShortHandImages[colorNorm];
+                      } else if (item.name.toLowerCase().includes("elevate jacket (long hands)") ) {
+                        // Hardcode color mapping (long hands)
+                        if (colorNorm === "grey") {
+                          src = "https://pub-bd618a9723f54128a9dbd24698f83fba.r2.dev/cloth%20torea/IMG_0671.PNG";
+                        } else if (colorNorm === "black") {
+                          src = "https://pub-bd618a9723f54128a9dbd24698f83fba.r2.dev/cloth%20torea/IMG_0660.PNG";
+                        } else if (colorNorm === "wine") {
+                          src = "https://pub-bd618a9723f54128a9dbd24698f83fba.r2.dev/cloth%20torea/IMG_0659.PNG";
+                        } else if (colorNorm === "baby pink") {
+                          src = "https://pub-bd618a9723f54128a9dbd24698f83fba.r2.dev/cloth%20torea/IMG_0669.PNG";
+                        }
+                      } else if (item.name.toLowerCase().includes("peak fit")) {
+                        // Hardcode color mapping for Peak Fit
+                        if (colorNorm === "black") {
+                          src = "https://pub-bd618a9723f54128a9dbd24698f83fba.r2.dev/cloth%20torea/IMG_0773.JPG";
+                        } else if (colorNorm === "green") {
+                          src = "https://pub-bd618a9723f54128a9dbd24698f83fba.r2.dev/cloth%20torea/IMG_0774.JPG";
+                        } else if (colorNorm === "white") {
+                          src = "https://pub-bd618a9723f54128a9dbd24698f83fba.r2.dev/cloth%20torea/IMG_0776.JPG";
+                        } else if (colorNorm === "grey") {
+                          src = "https://pub-bd618a9723f54128a9dbd24698f83fba.r2.dev/cloth%20torea/IMG_0772.JPG";
+                        }
+                      } else if (item.name.toLowerCase().includes("luxe set") && luxeSetImages[colorNorm]) {
+                        src = luxeSetImages[colorNorm];
+                      } else if (
+                        item.name.toLowerCase().includes("men’s streetwear track pants") ||
+                        item.name.toLowerCase().includes("mens streetwear track pants")
+                      ) {
+                        // Hardcode color mapping for Men's streetwear track pants
+                        if (colorNorm === "grey") {
+                          src = "https://pub-bd618a9723f54128a9dbd24698f83fba.r2.dev/cloth%20torea/IMG_9976.JPG";
+                        } else if (colorNorm === "burgundy") {
+                          src = "https://pub-bd618a9723f54128a9dbd24698f83fba.r2.dev/cloth%20torea/IMG_9980.JPG";
+                        } else if (colorNorm === "black") {
+                          src = "https://pub-bd618a9723f54128a9dbd24698f83fba.r2.dev/cloth%20torea/IMG_9979.JPG";
+                        }
+                      }
+                      return src ? (
+                        <Image
+                          src={item.imageUrl || src || "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1200&auto=format&fit=crop"}
+                          alt={item.name + (item.color ? ` (${item.color})` : "")}
+                          className="h-full w-full object-cover"
+                          width={300}
+                          height={400}
+                        />
+                      ) : null;
+                    })()}
                     <span className="absolute -right-2 -top-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-black px-1 text-[11px] text-white">
                       {item.quantity}
                     </span>
@@ -514,7 +541,8 @@ export default function CheckoutPage() {
             />
             <button
               type="button"
-              onClick={() => setDiscountApplied(discountCode.trim().length > 0)}
+              // Use setDiscountCode to update discount code
+              onClick={() => setDiscountCode(discountCode.trim())}
               className="rounded-lg border border-zinc-300 px-4 py-2 text-sm"
             >
               Apply

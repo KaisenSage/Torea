@@ -38,7 +38,7 @@ export function StoreFooter() {
             <a href="https://www.tiktok.com/@heytoreah?_r=1&_t=ZS-94bHbrhDwa9" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
               <FaTiktok className="h-7 w-7 text-zinc-700 hover:text-black transition" />
             </a>
-            <a href="https://wa.me/2348080523590" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+            <a href="https://wa.me/2349135828246" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
               <FaWhatsapp className="h-7 w-7 text-zinc-700 hover:text-green-500 transition" />
             </a>
             <a href="mailto:Heytoreah@gmail.com" target="_blank" rel="noopener noreferrer" aria-label="Email">

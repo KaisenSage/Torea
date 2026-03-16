@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 type VariantOption = {
@@ -17,6 +18,7 @@ type ProductVariantPurchaseProps = {
   totalStock: number;
   variants: VariantOption[];
   fallbackEnabled: boolean;
+  images?: Array<{ color: string; imageUrl: string; cloudflareImageId?: string }>;
 };
 
 function normalize(value: string | null | undefined) {
@@ -34,11 +36,19 @@ export function ProductVariantPurchase({
   totalStock,
   variants,
   fallbackEnabled,
+  images = [],
 }: ProductVariantPurchaseProps) {
   const router = useRouter();
   const [selectedSize, setSelectedSize] = useState(sizes[0] || "");
   const [selectedColor, setSelectedColor] = useState(colors[0] || "");
   const [isAdding, setIsAdding] = useState(false);
+
+  // Find color images from variants (assume parent passes images array as prop)
+  const colorImages = useMemo(() => {
+    return Array.isArray(images)
+      ? images.filter((img: { color?: string; imageUrl?: string }) => img.color && img.imageUrl)
+      : [];
+  }, [images]);
 
   const selectedVariant = useMemo(() => {
     if (variants.length === 0) {
@@ -114,6 +124,35 @@ export function ProductVariantPurchase({
 
   return (
     <>
+      {/* Color thumbnails grid */}
+      {colorImages.length > 0 && (
+        <div className="mb-4 flex gap-2">
+          {colorImages.map(({ color, imageUrl }: { color: string; imageUrl: string }) => {
+            const active = normalize(color) === normalize(selectedColor);
+            return (
+              <button
+                key={color}
+                type="button"
+                onClick={() => setSelectedColor(String(color))}
+                className={`relative rounded-md border transition ${active ? "border-black ring-2 ring-black" : "border-zinc-300"}`}
+                style={{ padding: 0, width: 48, height: 48 }}
+                aria-label={`Select color ${color}`}
+              >
+                <Image
+                  src={imageUrl}
+                  alt={color}
+                  width={48}
+                  height={48}
+                  className="object-cover rounded-md"
+                />
+                {active && (
+                  <span className="absolute inset-0 rounded-md ring-2 ring-black pointer-events-none" />
+                )}
+              </button>
+            );
+          })}
+        </div>
+      )}
       <div className="space-y-3">
         <div>
           <p className="mb-2 text-sm font-medium text-zinc-900">Available sizes</p>

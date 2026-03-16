@@ -6,25 +6,25 @@ const categories = [
   {
     name: "Tops",
     href: "/shop?category=tops",
-    img: "https://pub-bd618a9723f54128a9dbd24698f83fba.r2.dev/torea-tops.webp",
+    img: "https://pub-bd618a9723f54128a9dbd24698f83fba.r2.dev/cloth%20torea/IMG_0671.PNG",
     alt: "Toréa women's tops collection",
   },
   {
     name: "Bottoms",
     href: "/shop?category=bottoms",
-    img: "https://pub-bd618a9723f54128a9dbd24698f83fba.r2.dev/torea-bottoms.webp",
+    img: "https://pub-bd618a9723f54128a9dbd24698f83fba.r2.dev/cloth%20torea/IMG_0681.PNG",
     alt: "Toréa women's bottoms collection",
   },
   {
     name: "Two Piece",
     href: "/shop?category=two%20piece",
-    img: "https://pub-bd618a9723f54128a9dbd24698f83fba.r2.dev/torea-two-piece.webp",
+    img: "https://pub-bd618a9723f54128a9dbd24698f83fba.r2.dev/cloth%20torea/IMG_0805.PNG",
     alt: "Toréa women's two piece collection",
   },
   {
     name: "Jumpsuit",
     href: "/shop?category=jumpsuits",
-    img: "https://pub-bd618a9723f54128a9dbd24698f83fba.r2.dev/torea-jumpsuit.webp",
+    img: "https://pub-bd618a9723f54128a9dbd24698f83fba.r2.dev/cloth%20torea/IMG_0465.PNG",
     alt: "Toréa women's jumpsuit collection",
   },
 ];
@@ -61,3 +61,4 @@ export default function ShopByCategorySection() {
     </section>
   );
 }
+

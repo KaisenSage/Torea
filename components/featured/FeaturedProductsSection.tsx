@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
 
 type FeaturedProduct = {
   id: string;
@@ -34,13 +33,6 @@ export default function FeaturedProductsSection({
   viewAllHref?: string;
   products: FeaturedProduct[];
 }) {
-  const [savedIds, setSavedIds] = useState<string[]>([]);
-
-  function toggleSaved(productId: string) {
-    setSavedIds((prev) =>
-      prev.includes(productId) ? prev.filter((id) => id !== productId) : [...prev, productId],
-    );
-  }
 
   return (
     <section className="w-full py-10" id="featured-products">
@@ -65,41 +57,15 @@ export default function FeaturedProductsSection({
                 <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#f3f4f6]">
                   <Link href={product.href} className="absolute inset-0 z-10" aria-label={`Open ${product.name}`} />
                   <Image
-                    src={product.imageUrl}
+                    src={product.name.toLowerCase().includes("charme set")
+                      ? "https://pub-bd618a9723f54128a9dbd24698f83fba.r2.dev/cloth%20torea/IMG_0681.PNG"
+                      : product.imageUrl}
                     alt={product.name}
                     fill
                     sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
                     className="object-contain p-4 drop-shadow-sm transition-transform duration-300 group-hover:scale-[1.02]"
                   />
-
-                  <div className="pointer-events-none absolute right-3 top-3 z-20 flex flex-col gap-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100">
-                    <Link
-                      href={product.href}
-                      aria-label={`Search details for ${product.name}`}
-                      className="pointer-events-auto grid h-9 w-9 place-items-center rounded-full bg-black text-white"
-                    >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="stroke-white">
-                        <path d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z" strokeWidth="1.7" />
-                        <path d="m21 21-4.3-4.3" strokeWidth="1.7" strokeLinecap="round" />
-                      </svg>
-                    </Link>
-
-                    <button
-                      type="button"
-                      aria-label={`Add ${product.name} to list`}
-                      aria-pressed={savedIds.includes(product.id)}
-                      title={savedIds.includes(product.id) ? "Added to list" : "Add to list"}
-                      onClick={() => toggleSaved(product.id)}
-                      className="pointer-events-auto grid h-9 w-9 place-items-center rounded-full bg-black text-white"
-                    >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="stroke-white">
-                        <path d="M12 5v14" strokeWidth="1.7" strokeLinecap="round" />
-                        <path d="M5 12h14" strokeWidth="1.7" strokeLinecap="round" />
-                      </svg>
-                    </button>
-                  </div>
                 </div>
-
                 <div className="mt-5 space-y-2">
                   <p className="line-clamp-2 text-sm leading-6 text-black/90">{product.name}</p>
                   <p className="text-lg font-semibold tracking-tight text-zinc-900">

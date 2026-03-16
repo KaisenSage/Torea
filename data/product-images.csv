@@ -1,0 +1,56 @@
+product_id,name,color,cloudflareImageId
+1,charme set,lavendar,d01984d8-a13b-4465-7fb1-281c3abd5c00
+1,charme set,black,a8ac0d83-20cf-43fa-2a7d-7296e2c13a00
+1,charme set,mint green,ef7ab0bc-b2b8-4b95-46a2-c8145d1f6f00
+1,charme set,brown,ee2cc381-237d-4218-8a22-cd6e265eac00
+2,luxe set,grey,
+2,luxe set,blue,9dc956be-2fad-4f6c-c6a0-5096368e0200
+2,luxe set,mint green,2530091a-2f46-470c-a629-a6225d99ea00
+2,luxe set,nude,ef34d6ab-8cba-45ba-815c-f434b9479700
+2,luxe set,light brown,ee920c49-3e5c-40af-210b-fe916ef0a700
+3,skylar set,grey,10fc736c-ff95-4d2a-95e8-307deca8e500
+3,skylar set,mint green,d29240bd-025b-4624-b171-b974e8d7a200
+3,skylar set,nude,110ef12e-38da-457a-5392-4cc39cc87e00
+3,skylar set,brown,a703b788-9853-4923-fc02-b0405ce4bb00
+3,skylar set,dark blue,323f308b-e203-4d6b-a6b7-679feef89400
+3,skylar set,black,4d8d0e9d-a4ba-4e67-bec7-9000259a9c00
+4,Flexsuit,burgundy,1841b008-428b-4214-8314-f84a2e19e000
+4,Flexsuit,grey,0a7b3d73-d237-4e82-729c-507d418e7b00
+4,Flexsuit,black,e1a4b671-62cc-420e-c815-6a3919cfa800
+5,Corefit,burnt orange,a9a06351-9ce1-461b-7180-fe3c303b8300
+5,Corefit,nude,34d4cf80-2510-44bf-f723-eeb9f2997b00
+5,Corefit,mint green,0f6eb34d-1991-4450-6367-96c935047b00
+5,Corefit,black,b32908ca-4317-4788-20c6-5599f083e400
+5,Corefit,wine,b3db7db5-bb78-41b0-7806-9e49994d3000
+6,Peak fit,Brown,29f21e35-5f82-44fa-a18d-101893d4dd00
+6,Peak fit,dark blue,6b439961-cb00-4911-2683-53fea79b6c00
+6,Peak fit,mint green,819a9f47-8d6d-41e5-3789-bd839504c600
+6,Peak fit,nude,ab53d4b2-be29-4ca8-bc00-6752452e4700
+6,Peak fit,grey,051723f2-6c2d-4cff-81fe-0ddad83bf100
+6,Peak fit,black,1ef4ca33-0264-4e77-0cfe-df6685d78c00
+7,Bum covers,,
+8,Singlets,,
+9,Elevate jacket ( short hand ),baby pink,f9e5c3f0-091c-4f3a-203a-96be40c82000
+9,Elevate jacket ( short hand ),light blue,b93f1dbf-b6b9-4454-5b51-9dc8aa6cde00
+9,Elevate jacket ( short hand ),grey,701b8248-5424-4e7d-adda-134d80e09900
+9,Elevate jacket ( short hand ),nude,0bb2a142-2a4e-4b75-2549-f5b668ffdb00
+9,Elevate jacket ( short hand ),black,a6a9439e-38b5-49c2-0d45-c6b065770d00
+10,Elevate jacket ( long hands ),wine,7424721e-33a0-40c9-6f79-8dd33a6bb900
+10,Elevate jacket ( long hands ),grey,d03cadc2-7c36-48ee-c9d9-7d6303386800
+10,Elevate jacket ( long hands ),baby pink,9e3ee478-6c42-4159-b64e-fce653e25400
+10,Elevate jacket ( long hands ),black,81500c6e-2663-46fc-2275-ece637a1ac00
+11,Vortex compression ,white,0a7f2182-3dc3-4c8e-a8bc-894eddc0a400
+11,Vortex compression ,black,9ff96484-b322-43c7-1d62-a30459e50c00
+11,Vortex compression ,light sage green,b85edbbc-6b8d-42ff-79db-078afc23b200
+11,Vortex compression ,grey,14cae3d0-8be6-4e6f-5bb6-442c284fd400
+12,Quarter zip compression training top,Burgundy,190b3646-66e3-4e32-d4e5-72760ae60300
+12,Quarter zip compression training top,dark blue,9aeec93c-916a-4bee-e452-8d40496dee00
+13,Men’s streetwear track pants,Burgundy,bba6c51a-3256-41f9-b66f-48b31bfbb500
+13,Men’s streetwear track pants,black,7e336eac-2528-487d-75fa-ce5f0afa5600
+13,Men’s streetwear track pants,grey,ab8ba178-582d-47c2-d0d4-a29079d2ea00
+14,Basic cotton tops ,white and black,a975ae6f-e364-4735-2986-e67db99e6c00
+14,Basic cotton tops ,grey and black,344aa026-fec3-4d8e-974b-f81066410e00
+15,Gym shorts ,Black,802256ae-7c24-4ae2-1507-bf31e1503000
+15,Gym shorts ,light sage ,e71f6d52-359b-437f-9af8-0fdf9f893400
+15,Gym shorts ,green,e5955eee-bf9a-4d45-a855-948a4ae77a00
+15,Gym shorts ,grey,7dfea221-8648-4667-8c30-0b19de190700

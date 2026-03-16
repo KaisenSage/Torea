@@ -1,0 +1,271 @@
+[
+  {
+    "product_id": "charme-set",
+    "slug": "charme-set",
+    "name": "Charme set",
+    "description": "Whether you’re heading to the gym, practicing yoga, running, or enjoying an active day out, this versatile set combines modern athletic style with everyday functionality.",
+    "category": "Bottoms",
+    "subcategory": "Tops ",
+    "price": "25,990",
+    ...existing code...
+    "colors": "Grey, mint green, nude, brown, dark blue, black",
+    "material": "Spandex ",
+    "careInstructions": "",
+    "images": [
+      {"cloudflareImageId": "10fc736c-ff95-4d2a-95e8-307deca8e500", "color": "grey", "imageUrl": "https://your.cloudflare.url/10fc736c-ff95-4d2a-95e8-307deca8e500"},
+      {"cloudflareImageId": "d29240bd-025b-4624-b171-b974e8d7a200", "color": "mint green", "imageUrl": "https://your.cloudflare.url/d29240bd-025b-4624-b171-b974e8d7a200"},
+      {"cloudflareImageId": "110ef12e-38da-457a-5392-4cc39cc87e00", "color": "nude", "imageUrl": "https://your.cloudflare.url/110ef12e-38da-457a-5392-4cc39cc87e00"},
+      {"cloudflareImageId": "a703b788-9853-4923-fc02-b0405ce4bb00", "color": "brown", "imageUrl": "https://your.cloudflare.url/a703b788-9853-4923-fc02-b0405ce4bb00"},
+      {"cloudflareImageId": "323f308b-e203-4d6b-a6b7-679feef89400", "color": "dark blue", "imageUrl": "https://your.cloudflare.url/323f308b-e203-4d6b-a6b7-679feef89400"},
+      {"cloudflareImageId": "4d8d0e9d-a4ba-4e67-bec7-9000259a9c00", "color": "black", "imageUrl": "https://your.cloudflare.url/4d8d0e9d-a4ba-4e67-bec7-9000259a9c00"}
+    ]
+  },
+  {
+    "product_id": "aero-sculpt-jumpsuit",
+    "slug": "aero-sculpt-jumpsuit",
+    "name": "Aero sculpt jumpsuit ",
+    "description": "Perfect for gym training, yoga, pilates, or athleisure wear, this jumpsuit combines performance and modern fashion to create a standout activewear essential.",
+    "category": "Tops",
+    "subcategory": "Jumpsuits ",
+    "price": "25,990",
+    "stock": "10",
+    "sizes": "M, L",
+    "colors": "White, light brown, mint green, grey",
+    "material": "Cotton ",
+    "careInstructions": "",
+      "images": [
+        {"cloudflareImageId": "d88dfb6f-504d-4e33-6500-bfcbd0cdb300", "color": "white", "imageUrl": "https://your.cloudflare.url/d88dfb6f-504d-4e33-6500-bfcbd0cdb300"},
+        {"cloudflareImageId": "2d31a092-5795-4e50-81ee-0431dc2f8c00", "color": "light brown", "imageUrl": "https://your.cloudflare.url/2d31a092-5795-4e50-81ee-0431dc2f8c00"},
+        {"cloudflareImageId": "a79ca780-8c21-4c82-5258-0fe4faeb7a00", "color": "mint green", "imageUrl": "https://your.cloudflare.url/a79ca780-8c21-4c82-5258-0fe4faeb7a00"},
+        {"cloudflareImageId": "673a2143-2d68-4af5-a91c-2c5c2e9a4f00", "color": "grey", "imageUrl": "https://your.cloudflare.url/673a2143-2d68-4af5-a91c-2c5c2e9a4f00"}
+      ]
+  },
+  {
+    "product_id": "flexsuit",
+    "slug": "flexsuit",
+    "name": "Flexsuit",
+    "description": "Made from a premium stretch cotton _spandex blend, the fabric is lightweight, breathable, and moisture-wicking to keep you cool and comfortable during workouts. The seamless construction reduces irritation while the open-back design adds both style and improved ventilation.",
+    "category": "Tops",
+    "subcategory": "Jumpsuit",
+    "price": "29,990",
+    "stock": "10",
+    "sizes": "M, L",
+    "colors": "Burgundy , grey, black",
+    "material": "Cotton ",
+    "careInstructions": "",
+      "images": [
+        {"cloudflareImageId": "1841b008-428b-4214-8314-f84a2e19e000", "color": "burgundy", "imageUrl": "https://your.cloudflare.url/1841b008-428b-4214-8314-f84a2e19e000"},
+        {"cloudflareImageId": "0a7b3d73-d237-4e82-729c-507d418e7b00", "color": "grey", "imageUrl": "https://your.cloudflare.url/0a7b3d73-d237-4e82-729c-507d418e7b00"},
+        {"cloudflareImageId": "e1a4b671-62cc-420e-c815-6a3919cfa800", "color": "black", "imageUrl": "https://your.cloudflare.url/e1a4b671-62cc-420e-c815-6a3919cfa800"}
+      ]
+  },
+  {
+    "product_id": "corefit",
+    "slug": "corefit",
+    "name": "Corefit",
+    "description": "The high-waisted leggings provide gentle compression and support around the core, enhancing comfort and confidence whether you’re at the gym, practicing yoga, running, or enjoying an active day out.",
+    "category": "Tops",
+    "subcategory": "Bottoms ",
+    "price": "25,990",
+    "stock": "10",
+    "sizes": "M, L",
+    "colors": "Burnt orange , nude , mint green, black, wine",
+    "material": "Cotton ",
+    "careInstructions": "",
+      "images": [
+        {"cloudflareImageId": "a9a06351-9ce1-461b-7180-fe3c303b8300", "color": "burnt orange", "imageUrl": "https://your.cloudflare.url/a9a06351-9ce1-461b-7180-fe3c303b8300"},
+        {"cloudflareImageId": "34d4cf80-2510-44bf-f723-eeb9f2997b00", "color": "nude", "imageUrl": "https://your.cloudflare.url/34d4cf80-2510-44bf-f723-eeb9f2997b00"},
+        {"cloudflareImageId": "0f6eb34d-1991-4450-6367-96c935047b00", "color": "mint green", "imageUrl": "https://your.cloudflare.url/0f6eb34d-1991-4450-6367-96c935047b00"},
+        {"cloudflareImageId": "b32908ca-4317-4788-20c6-5599f083e400", "color": "black", "imageUrl": "https://your.cloudflare.url/b32908ca-4317-4788-20c6-5599f083e400"},
+        {"cloudflareImageId": "b3db7db5-bb78-41b0-7806-9e49994d3000", "color": "wine", "imageUrl": "https://your.cloudflare.url/b3db7db5-bb78-41b0-7806-9e49994d3000"}
+      ]
+  },
+  {
+    "product_id": "peak-fit",
+    "slug": "peak-fit",
+    "name": "Peak fit ",
+    "description": "Designed for performance and style, the Women’s Seamless Gym Workout Set offers the perfect balance of comfort, flexibility, and support. This sleek two-piece set features a fitted camisole-style top paired with high-waisted shorts, creating a flattering and body-contouring silhouette that moves with you during every workout.",
+    "category": "Tops",
+    "subcategory": "Bottoms ",
+    "price": "25,990",
+    "stock": "8",
+    "sizes": "M, L",
+    "colors": "Brown , dark blue, mint green, nude, grey, black",
+    "material": "Spandex ",
+    "careInstructions": "",
+      "images": [
+        {"cloudflareImageId": "29f21e35-5f82-44fa-a18d-101893d4dd00", "color": "brown", "imageUrl": "https://your.cloudflare.url/29f21e35-5f82-44fa-a18d-101893d4dd00"},
+        {"cloudflareImageId": "6b439961-cb00-4911-2683-53fea79b6c00", "color": "dark blue", "imageUrl": "https://your.cloudflare.url/6b439961-cb00-4911-2683-53fea79b6c00"},
+        {"cloudflareImageId": "819a9f47-8d6d-41e5-3789-bd839504c600", "color": "mint green", "imageUrl": "https://your.cloudflare.url/819a9f47-8d6d-41e5-3789-bd839504c600"},
+        {"cloudflareImageId": "ab53d4b2-be29-4ca8-bc00-6752452e4700", "color": "nude", "imageUrl": "https://your.cloudflare.url/ab53d4b2-be29-4ca8-bc00-6752452e4700"},
+        {"cloudflareImageId": "051723f2-6c2d-4cff-81fe-0ddad83bf100", "color": "grey", "imageUrl": "https://your.cloudflare.url/051723f2-6c2d-4cff-81fe-0ddad83bf100"},
+        {"cloudflareImageId": "1ef4ca33-0264-4e77-0cfe-df6685d78c00", "color": "black", "imageUrl": "https://your.cloudflare.url/1ef4ca33-0264-4e77-0cfe-df6685d78c00"}
+      ]
+  },
+  {
+    "product_id": "bum-covers",
+    "slug": "bum-covers",
+    "name": "Bum covers ",
+    "description": "Stretchy ",
+    "category": "Bottoms",
+    "subcategory": "Shorts",
+    "price": "15,990",
+    "stock": "5",
+    "sizes": "",
+    "colors": "",
+    "material": "Cotton ",
+    "careInstructions": "",
+    "images": []
+  },
+  {
+    "product_id": "singlets",
+    "slug": "singlets",
+    "name": "Singlets ",
+    "description": "Padded and stretchy \nNo need for bra or inner wear due to the extra pad that comes with this fit .",
+    "category": "Tops",
+    "subcategory": "",
+    "price": "10,990",
+    "stock": "5",
+    "sizes": "M",
+    "colors": "",
+    "material": "Cotton ",
+    "careInstructions": "",
+    "images": []
+  },
+  {
+    "product_id": "elevate-jacket-short-hand",
+    "slug": "elevate-jacket-short-hand",
+    "name": "Elevate jacket ( short hand )",
+    "description": "The lightweight and breathable fabric helps regulate body temperature while keeping you comfortable during training sessions, warm-ups, or outdoor activities. \n",
+    "category": "Tops",
+    "subcategory": "Jackets ",
+    "price": "20,990",
+    "stock": "10",
+    "sizes": "M",
+    "colors": "Baby pink , light blue , grey , nude, black ",
+    "material": "Spandex ",
+    "careInstructions": "",
+      "images": [
+        {"cloudflareImageId": "f9e5c3f0-091c-4f3a-203a-96be40c82000", "color": "baby pink", "imageUrl": "https://your.cloudflare.url/f9e5c3f0-091c-4f3a-203a-96be40c82000"},
+        {"cloudflareImageId": "b93f1dbf-b6b9-4454-5b51-9dc8aa6cde00", "color": "light blue", "imageUrl": "https://your.cloudflare.url/b93f1dbf-b6b9-4454-5b51-9dc8aa6cde00"},
+        {"cloudflareImageId": "701b8248-5424-4e7d-adda-134d80e09900", "color": "grey", "imageUrl": "https://your.cloudflare.url/701b8248-5424-4e7d-adda-134d80e09900"},
+        {"cloudflareImageId": "0bb2a142-2a4e-4b75-2549-f5b668ffdb00", "color": "nude", "imageUrl": "https://your.cloudflare.url/0bb2a142-2a4e-4b75-2549-f5b668ffdb00"},
+        {"cloudflareImageId": "a6a9439e-38b5-49c2-0d45-c6b065770d00", "color": "black", "imageUrl": "https://your.cloudflare.url/a6a9439e-38b5-49c2-0d45-c6b065770d00"}
+      ]
+  },
+  {
+    "product_id": "elevate-jacket-long-hands",
+    "slug": "elevate-jacket-long-hands",
+    "name": "Elevate jacket ( long hands )",
+    "description": "\nThe lightweight and breathable fabric helps regulate body temperature while keeping you comfortable during training sessions, warm-ups, or outdoor activities. Its flexible design allows a full range of motion, making it ideal for gym workouts, running, yoga, or everyday active wear.\n",
+    "category": "Tops",
+    "subcategory": "Jacket ",
+    "price": "23,990",
+    "stock": "5",
+    "sizes": "L",
+    "colors": "Wine , grey, baby pink , black ",
+    "material": "Spandex ",
+    "careInstructions": "",
+      "images": [
+        {"cloudflareImageId": "7424721e-33a0-40c9-6f79-8dd33a6bb900", "color": "wine", "imageUrl": "https://your.cloudflare.url/7424721e-33a0-40c9-6f79-8dd33a6bb900"},
+        {"cloudflareImageId": "d03cadc2-7c36-48ee-c9d9-7d6303386800", "color": "grey", "imageUrl": "https://your.cloudflare.url/d03cadc2-7c36-48ee-c9d9-7d6303386800"},
+        {"cloudflareImageId": "9e3ee478-6c42-4159-b64e-fce653e25400", "color": "baby pink", "imageUrl": "https://your.cloudflare.url/9e3ee478-6c42-4159-b64e-fce653e25400"},
+        {"cloudflareImageId": "81500c6e-2663-46fc-2275-ece637a1ac00", "color": "black", "imageUrl": "https://your.cloudflare.url/81500c6e-2663-46fc-2275-ece637a1ac00"}
+      ]
+  },
+  {
+    "product_id": "vortex-compression",
+    "slug": "vortex-compression",
+    "name": "Vortex compression ",
+    "description": "\nDesigned for performance and comfort, the Men’s Seamless Compression Training Shirt provides a supportive, second-skin fit that enhances your workout\n\n\n",
+    "category": "Tops",
+    "subcategory": "Tops ",
+    "price": "25,990",
+    "stock": "10",
+    "sizes": "M, L",
+    "colors": "White, black , light sage green, grey ",
+    "material": "Spandex ",
+    "careInstructions": "",
+      "images": [
+        {"cloudflareImageId": "0a7f2182-3dc3-4c8e-a8bc-894eddc0a400", "color": "white", "imageUrl": "https://your.cloudflare.url/0a7f2182-3dc3-4c8e-a8bc-894eddc0a400"},
+        {"cloudflareImageId": "9ff96484-b322-43c7-1d62-a30459e50c00", "color": "black", "imageUrl": "https://your.cloudflare.url/9ff96484-b322-43c7-1d62-a30459e50c00"},
+        {"cloudflareImageId": "b85edbbc-6b8d-42ff-79db-078afc23b200", "color": "light sage green", "imageUrl": "https://your.cloudflare.url/b85edbbc-6b8d-42ff-79db-078afc23b200"},
+        {"cloudflareImageId": "14cae3d0-8be6-4e6f-5bb6-442c284fd400", "color": "grey", "imageUrl": "https://your.cloudflare.url/14cae3d0-8be6-4e6f-5bb6-442c284fd400"}
+      ]
+  },
+  {
+    "product_id": "quarter-zip-compression-training-top",
+    "slug": "quarter-zip-compression-training-top",
+    "name": "Quarter zip compression training top ",
+    "description": "Push your limits in style and comfort with the Men’s Quarter-Zip Compression Training Top. Designed for athletes and fitness enthusiasts, this performance top delivers a sleek, body-contouring fit that supports your muscles during intense workouts while maintaining maximum flexibility.\n\nCrafted from a high-stretch polyester–spandex blend, the fabric moves with your body while effectively wicking away sweat to keep you cool and dry. The lightweight material provides breathable comfort, making it perfect for gym training, running, outdoor workouts, or everyday active wear.",
+    "category": "Tops",
+    "subcategory": "Tops ",
+    "price": "25,990",
+    "stock": "5",
+    "sizes": "XL",
+    "colors": "Burgundy, dark blue ",
+    "material": "Polyester/spandex blend ",
+    "careInstructions": "",
+    "images": [{"cloudflareImageId": "190b3646-66e3-4e32-d4e5-72760ae60300", "color": "burgundy", "imageUrl": "https://your.cloudflare.url/190b3646-66e3-4e32-d4e5-72760ae60300"},
+      {"cloudflareImageId": "9aeec93c-916a-4bee-e452-8d40496dee00", "color": "darkblue", "imageUrl": "https://your.cloudflare.url/9aeec93c-916a-4bee-e452-8d40496dee00"}
+      
+    ]
+  },
+  {
+    "product_id": "men-s-streetwear-track-pants",
+    "slug": "men-s-streetwear-track-pants",
+    "name": "Men’s streetwear track pants ",
+    "description": "Crafted from lightweight, durable fabric, they provide all-day comfort while allowing easy movement whether you’re training, running errands, or styling a casual streetwear look. The clean piping details and bold color give the pants a modern athletic edge that pairs effortlessly with hoodies, sneakers, or training tops.",
+    "category": "Bottoms",
+    "subcategory": "Bottoms ",
+    "price": "25,990",
+    "stock": "8",
+    "sizes": "XL",
+    "colors": "Burgundy , black, grey ",
+    "material": "Polyester blend ",
+    "careInstructions": "",
+      "images": [
+        {"cloudflareImageId": "bba6c51a-3256-41f9-b66f-48b31bfbb500", "color": "burgundy", "imageUrl": "https://your.cloudflare.url/bba6c51a-3256-41f9-b66f-48b31bfbb500"},
+        {"cloudflareImageId": "7e336eac-2528-487d-75fa-ce5f0afa5600", "color": "black", "imageUrl": "https://your.cloudflare.url/7e336eac-2528-487d-75fa-ce5f0afa5600"},
+        {"cloudflareImageId": "ab8ba178-582d-47c2-d0d4-a29079d2ea00", "color": "grey", "imageUrl": "https://your.cloudflare.url/ab8ba178-582d-47c2-d0d4-a29079d2ea00"}
+      ]
+  },
+  {
+    "product_id": "basic-cotton-tops",
+    "slug": "basic-cotton-tops",
+    "name": "Basic cotton tops ",
+    "description": "The Cotton Basic Top is a timeless essential designed for everyday comfort and effortless style. Made from soft, breathable cotton fabric, this top offers a lightweight feel that keeps you comfortable throughout the day.",
+    "category": "Tops",
+    "subcategory": "Tops ",
+    "price": "20,990",
+    "stock": "5",
+    "sizes": "XL",
+    "colors": "White and black , grey and black ",
+    "material": "Cotton ",
+    "careInstructions": "",
+      "images": [
+        {"cloudflareImageId": "a975ae6f-e364-4735-2986-e67db99e6c00", "color": "white and black", "imageUrl": "https://your.cloudflare.url/a975ae6f-e364-4735-2986-e67db99e6c00"},
+        {"cloudflareImageId": "344aa026-fec3-4d8e-974b-f81066410e00", "color": "grey and black", "imageUrl": "https://your.cloudflare.url/344aa026-fec3-4d8e-974b-f81066410e00"}
+      ]
+  },
+  {
+    "product_id": "gym-shorts",
+    "slug": "gym-shorts",
+    "name": "Gym shorts ",
+    "description": "Train harder and move freely with the Men’s Performance Gym Shorts, designed for comfort, flexibility, and durability during intense workouts. Made from lightweight, breathable fabric, these shorts help keep you cool and comfortable whether you’re lifting, running, or training.\nWith a modern athletic design and practical side pockets, these gym shorts are perfect for workouts, sports activities, or casual everyday wear.",
+    "category": "Bottoms",
+    "subcategory": "Bottoms ",
+    "price": "15,990",
+    "stock": "10",
+    "sizes": "XL",
+    "colors": "Black , light sage, green, grey g",
+    "material": "Polyester / spandex blend ",
+    "careInstructions": "",
+      "images": [
+        {"cloudflareImageId": "802256ae-7c24-4ae2-1507-bf31e1503000", "color": "black", "imageUrl": "https://your.cloudflare.url/802256ae-7c24-4ae2-1507-bf31e1503000"},
+        {"cloudflareImageId": "e71f6d52-359b-437f-9af8-0fdf9f893400", "color": "light sage", "imageUrl": "https://your.cloudflare.url/e71f6d52-359b-437f-9af8-0fdf9f893400"},
+        {"cloudflareImageId": "e5955eee-bf9a-4d45-a855-948a4ae77a00", "color": "green", "imageUrl": "https://your.cloudflare.url/e5955eee-bf9a-4d45-a855-948a4ae77a00"},
+        {"cloudflareImageId": "7dfea221-8648-4667-8c30-0b19de190700", "color": "grey", "imageUrl": "https://your.cloudflare.url/7dfea221-8648-4667-8c30-0b19de190700"}
+      ]
+  }
+]

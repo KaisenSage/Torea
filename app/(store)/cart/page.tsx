@@ -163,7 +163,12 @@ export default function CartPage() {
                 <div key={item.key} className="flex items-start justify-between gap-4 border-b border-zinc-100 pb-4">
                   <div className="flex gap-3">
                     <div className="relative h-20 w-16 overflow-hidden rounded-md bg-zinc-100">
-                      <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
+                      <Image
+                        src={item.imageUrl || "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1200&auto=format&fit=crop"}
+                        alt={item.name + (item.color ? ` (${item.color})` : "")}
+                        fill
+                        className="object-cover"
+                      />
                     </div>
                     <div className="space-y-2">
                       <p className="max-w-sm text-sm font-medium text-zinc-900">{item.name}</p>

@@ -29,7 +29,7 @@ type ProductRecord = {
   availableColors: unknown;
   stockTotal: number;
   variants: ProductPageVariant[];
-  images: Array<{ cloudflareImageId: string }>;
+  images: Array<{ cloudflareImageId: string; color?: string }>;
   isActive: boolean;
 };
 
@@ -47,6 +47,7 @@ function shouldHideFeature(value: string) {
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
+    // Debug logging removed to fix errors
   const { slug } = await params;
 
   let product: ProductRecord | null = null;
@@ -75,10 +76,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     ? Math.min(...product.variants.map((variant: ProductPageVariant) => variant.priceKobo))
     : 0;
 
-  const heroImage =
-    product?.images[0]?.cloudflareImageId && process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH
-      ? `https://imagedelivery.net/${process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH}/${product.images[0].cloudflareImageId}/public`
-      : "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1200&auto=format&fit=crop";
+  // Charme set hardcoded gallery
   const imageAlt = product?.name || "TORÉA product";
 
   // Recently viewed products (client-side only)
@@ -87,8 +85,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
   let recentlyViewed: ViewedProduct[] = [];
   if (typeof window !== "undefined") {
     const viewed: ViewedProduct[] = JSON.parse(localStorage.getItem("recentlyViewed") || "[]");
+    const mainImage =
+      product.images && product.images[0]?.cloudflareImageId
+        ? `https://imagedelivery.net/${process.env.NEXT_PUBLIC_CLOUDFLARE_IMAGES_ACCOUNT_HASH || process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH}/${product.images[0].cloudflareImageId}/public`
+        : "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1200&auto=format&fit=crop";
     if (!viewed.find((p) => p.slug === slug)) {
-      viewed.unshift({ slug, name: product?.name || "", image: heroImage });
+      viewed.unshift({ slug, name: product?.name || "", image: mainImage });
       if (viewed.length > 5) viewed.pop();
       localStorage.setItem("recentlyViewed", JSON.stringify(viewed));
     }
@@ -131,8 +133,35 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   return (
     <div className="grid gap-8 pb-16 md:grid-cols-2">
-      <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-zinc-100">
-        <Image src={heroImage} alt={imageAlt} fill className="object-cover" />
+      <div className="w-full">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 p-2 bg-zinc-100 rounded-2xl">
+          {product.images && product.images.length > 0 ? (
+            product.images.map((img, idx) => (
+              <div key={img.cloudflareImageId || idx} className="flex flex-col items-center">
+                <Image
+                  src={img.cloudflareImageId
+                    ? `https://imagedelivery.net/${process.env.NEXT_PUBLIC_CLOUDFLARE_IMAGES_ACCOUNT_HASH || process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH}/${img.cloudflareImageId}/public`
+                    : "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1200&auto=format&fit=crop"}
+                  alt={product.name + " " + (img.color ? img.color : "")}
+                  width={120}
+                  height={150}
+                  className="rounded-lg object-cover border border-zinc-200 w-full h-auto max-w-[120px] max-h-[150px]"
+                  sizes="(max-width: 640px) 80px, (max-width: 1024px) 100px, 120px"
+                  priority={idx === 0}
+                />
+                <span className="text-xs mt-1 text-center break-words w-full">{img.color ? img.color : ""}</span>
+              </div>
+            ))
+          ) : (
+            <Image
+              src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1200&auto=format&fit=crop"
+              alt={product.name}
+              width={120}
+              height={150}
+              className="rounded-lg object-cover border border-zinc-200 w-full h-auto max-w-[120px] max-h-[150px]"
+            />
+          )}
+        </div>
       </div>
       <div className="space-y-5 relative">
         <h1 className="text-3xl font-semibold text-zinc-900">{product?.name}</h1>
@@ -239,7 +268,14 @@ export default async function ProductPage({ params }: ProductPageProps) {
                   <div className="aspect-[4/5] overflow-hidden rounded-xl bg-zinc-100">
                     {product.images?.[0]?.cloudflareImageId ? (
                       <Image
-                        src={`https://imagedelivery.net/${process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH}/${product.images[0].cloudflareImageId}/public`}
+                        src={
+                          product.images[0].cloudflareImageId.startsWith("http://") ||
+                          product.images[0].cloudflareImageId.startsWith("https://")
+                            ? product.images[0].cloudflareImageId
+                            : process.env.NEXT_PUBLIC_CLOUDFLARE_IMAGES_ACCOUNT_HASH || process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH
+                              ? `https://imagedelivery.net/${process.env.NEXT_PUBLIC_CLOUDFLARE_IMAGES_ACCOUNT_HASH || process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH}/${product.images[0].cloudflareImageId}/public`
+                              : "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1200&auto=format&fit=crop"
+                        }
                         alt={product.name}
                         width={220}
                         height={275}

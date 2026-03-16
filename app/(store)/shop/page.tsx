@@ -296,10 +296,29 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
           minPriceKobo: item.minPriceKobo,
           totalStock: item.totalStock,
           colors: item.colors,
-          imageUrl:
-            item.images[0]?.cloudflareImageId
-              ? `https://imagedelivery.net/${process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH}/${item.images[0].cloudflareImageId}/public`
-              : "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1200&auto=format&fit=crop",
+          imageUrl: (() => {
+            if (
+              item.slug === "mens-streetwear-track-pants" ||
+              item.slug === "men’s-streetwear-track-pants"
+            ) {
+              // Always show burgundy as default image
+              return "https://pub-bd618a9723f54128a9dbd24698f83fba.r2.dev/cloth%20torea/IMG_9980.JPG";
+            }
+            const rawId = item.images[0]?.cloudflareImageId;
+            const fallback = "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1200&auto=format&fit=crop";
+
+            if (!rawId) {
+              return fallback;
+            }
+
+            // If rawId is already a full URL, use it directly
+            if (rawId.startsWith("http://") || rawId.startsWith("https://")) {
+              return rawId;
+            }
+
+            // Otherwise, treat as Cloudflare image ID
+            return `https://imagedelivery.net/${process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH || "1Zd_w7gOgRwMrhdmCCSGag"}/${rawId}/public`;
+          })(),
           cartKey: item.variants[0]?.id ? `variant:${item.variants[0].id}` : `fallback:${item.slug}`,
         }))}
       />

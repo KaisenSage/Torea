@@ -9,7 +9,7 @@ export default async function StoreHomePage() {
     id: string;
     name: string;
     slug: string;
-    images: Array<{ cloudflareImageId: string }>;
+    images: Array<{ cloudflareImageId: string | null }>;
     variants: Array<{ priceKobo: number }>;
   }> = [];
 
@@ -36,10 +36,25 @@ export default async function StoreHomePage() {
     id: product.id,
     name: product.name,
     href: `/product/${product.slug}`,
-    imageUrl:
-      product.images[0]?.cloudflareImageId
-        ? `https://imagedelivery.net/${process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH}/${product.images[0].cloudflareImageId}/public`
-        : "https://images.unsplash.com/photo-1554412933-514a83d2f3c8?q=80&w=1200&auto=format&fit=crop",
+    imageUrl: (() => {
+      const rawId = product.images[0]?.cloudflareImageId;
+      const fallback =
+        "https://images.unsplash.com/photo-1554412933-514a83d2f3c8?q=80&w=1200&auto=format&fit=crop";
+
+      if (!rawId) {
+        return fallback;
+      }
+
+      if (rawId.startsWith("http://") || rawId.startsWith("https://")) {
+        return rawId;
+      }
+
+      if (process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH) {
+        return `https://imagedelivery.net/${process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH}/${rawId}/public`;
+      }
+
+      return fallback;
+    })(),
     priceKobo: product.variants[0]?.priceKobo ?? 0,
   }));
 

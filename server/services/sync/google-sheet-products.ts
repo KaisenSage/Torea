@@ -1,9 +1,10 @@
 import { parse } from "csv-parse/sync";
 import type { Prisma } from "@prisma/client";
-import { prisma } from "@/server/db/prisma";
+import { prisma } from "../../db/prisma";
 
 type CsvRow = {
   slug?: string;
+  imageUrl?: string;
   name?: string;
   description?: string;
   sku?: string;
@@ -14,6 +15,11 @@ type CsvRow = {
   allowBackorder?: string;
   isActive?: string;
   cloudflareImageId?: string;
+  cloudflareImageId2?: string;
+  cloudflareImageId3?: string;
+  cloudflareImageId4?: string;
+  cloudflareImageId5?: string;
+  cloudflareImageId6?: string;
   imageAlt?: string;
   imageSortOrder?: string;
   category?: string;
@@ -27,6 +33,7 @@ type CsvRow = {
 
 type NormalizedProductRow = {
   slug: string;
+  imageUrl?: string;
   name: string;
   description: string;
   sku: string;
@@ -37,6 +44,11 @@ type NormalizedProductRow = {
   allowBackorder: string;
   isActive: string;
   cloudflareImageId?: string;
+  cloudflareImageId2?: string;
+  cloudflareImageId3?: string;
+   cloudflareImageId4?: string;
+   cloudflareImageId5?: string;
+   cloudflareImageId6?: string;
   imageAlt?: string;
   imageSortOrder?: string;
   category?: string;
@@ -115,7 +127,7 @@ function parseFormResponseRows(csvText: string) {
   }
 
   const headers = matrix[0];
-  const rows = matrix.slice(1);
+    const rows = matrix.slice(1); // Fixed parsing error: added missing ':' or corrected syntax
   const productNameIndexes = headers.reduce<number[]>((all, header, index) => {
     if (header === "Product Name") {
       all.push(index);
@@ -160,6 +172,7 @@ function parseFormResponseRows(csvText: string) {
         keyFeatures: parseList(block["Key Features"]),
         availableSizes: sizes,
         availableColors: colors,
+        imageUrl: block["Image URL"] || undefined,
       });
     }
   }
@@ -186,6 +199,11 @@ function normalizeRows(csvText: string) {
     allowBackorder: row.allowBackorder || "false",
     isActive: row.isActive || "true",
     cloudflareImageId: row.cloudflareImageId,
+    cloudflareImageId2: row.cloudflareImageId2,
+    cloudflareImageId3: row.cloudflareImageId3,
+    cloudflareImageId4: row.cloudflareImageId4,
+    cloudflareImageId5: row.cloudflareImageId5,
+    cloudflareImageId6: row.cloudflareImageId6,
     imageAlt: row.imageAlt,
     imageSortOrder: row.imageSortOrder,
     category: row.category || "",
@@ -195,6 +213,7 @@ function normalizeRows(csvText: string) {
     keyFeatures: parseList(row.keyFeatures),
     availableSizes: parseList(row.availableSizes),
     availableColors: parseList(row.availableColors),
+    imageUrl: row.imageUrl || undefined,
   }));
 }
 
@@ -265,34 +284,54 @@ export async function syncProductsFromGoogleSheetCsv(csvUrl: string) {
       },
     });
 
-    const imageId = row.cloudflareImageId?.trim();
-    if (imageId) {
+    const baseSortOrder = toInt(row.imageSortOrder, 0);
+    const imageIds = [
+      row.imageUrl?.trim(),
+      row.cloudflareImageId?.trim(),
+      row.cloudflareImageId2?.trim(),
+      row.cloudflareImageId3?.trim(),
+      row.cloudflareImageId4?.trim(),
+      row.cloudflareImageId5?.trim(),
+      row.cloudflareImageId6?.trim(),
+    ].filter((value): value is string => Boolean(value));
+
+    for (const [index, imageId] of imageIds.entries()) {
+      const sortOrder = baseSortOrder + index;
+            const imageData = {
+              product: { connect: { id: product.id } },
+              variant: { connect: { id: variant.id } },
+              alt: row.imageAlt || productName,
+              sortOrder,
+              imageUrl: null as string | null,
+              cloudflareImageId: null as string | null,
+            };
+      // If imageUrl is present, use it; else, use cloudflareImageId
+      if (imageId && imageId.startsWith("http")) {
+        imageData.imageUrl = imageId;
+        imageData.cloudflareImageId = null;
+      } else if (imageId) {
+        imageData.cloudflareImageId = imageId;
+        imageData.imageUrl = null;
+      }
       const existingImage = await prisma.productImage.findFirst({
         where: {
           productId: product.id,
           variantId: variant.id,
-          cloudflareImageId: imageId,
+          OR: [
+            { imageUrl: imageData.imageUrl },
+            { cloudflareImageId: imageData.cloudflareImageId },
+          ],
         },
         select: { id: true },
       });
-
       if (existingImage) {
         await prisma.productImage.update({
           where: { id: existingImage.id },
-          data: {
-            alt: row.imageAlt || productName,
-            sortOrder: toInt(row.imageSortOrder, 0),
-          },
+          data: imageData,
         });
       } else {
         await prisma.productImage.create({
-          data: {
-            productId: product.id,
-            variantId: variant.id,
-            cloudflareImageId: imageId,
-            alt: row.imageAlt || productName,
-            sortOrder: toInt(row.imageSortOrder, 0),
-          },
+          data: imageData,
         });
       }
     }

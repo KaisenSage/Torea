@@ -25,18 +25,20 @@ export function ShopProductGrid({ items }: { items: ShopGridItem[] }) {
             priceKobo={item.minPriceKobo}
             cartKey={item.cartKey}
             canAdd={item.totalStock > 0}
-            imageUrl={item.imageUrl}
+            imageUrls={[item.imageUrl]}
           />
-          <div className="flex flex-wrap gap-2 text-xs">
-            <span className="rounded-full bg-zinc-100 px-2 py-1">
-              {item.totalStock > 0 ? `${item.totalStock} in stock` : "Out of stock"}
-            </span>
-            {item.colors.slice(0, 2).map((color) => (
-              <span key={String(color)} className="rounded-full bg-zinc-100 px-2 py-1">
-                {String(color)}
+          {item.slug !== "charme-set" && (
+            <div className="flex flex-wrap gap-2 text-xs">
+              <span className="rounded-full bg-zinc-100 px-2 py-1">
+                {item.totalStock > 0 ? `${item.totalStock} in stock` : "Out of stock"}
               </span>
-            ))}
-          </div>
+              {item.colors.slice(0, 2).map((color) => (
+                <span key={String(color)} className="rounded-full bg-zinc-100 px-2 py-1">
+                  {String(color)}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       )),
     [items],
