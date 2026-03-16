@@ -1,6 +1,8 @@
 export default function Head() {
   return (
     <>
+      <title>TORÉA</title>
+      <meta name="description" content="Wear elite. Train hard" />
       <link
         rel="icon"
         type="image/x-icon"
