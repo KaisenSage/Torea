@@ -21,8 +21,8 @@ const didotDisplay = GFS_Didot({
 });
 
 export const metadata: Metadata = {
-  title: "TOREA Fashion",
-  description: "Nigeria-first fashion storefront with secure Paystack checkout",
+  title: "TORÉA",
+  description: "Wear elite. Train hard",
 };
 
 export default function RootLayout({
