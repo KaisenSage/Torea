@@ -3,6 +3,6 @@ module.exports = {
     ADMIN_EMAIL: 'kvngbabstar@gmail.com',
   },
   images: {
-    domains: ['images.unsplash.com'],
+    domains: ['images.unsplash.com', 'imagedelivery.net'],
   },
 };
