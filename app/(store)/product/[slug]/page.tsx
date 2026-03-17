@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/server/db/prisma";
 import { ProductVariantPurchase } from "@/components/product/ProductVariantPurchase";
+import ProductGallery from "@/components/product/ProductGallery";
 
 type ProductPageProps = {
   params: Promise<{ slug: string }>;
@@ -47,36 +48,26 @@ function shouldHideFeature(value: string) {
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
-    // Debug logging removed to fix errors
   const { slug } = await params;
 
   let product: ProductRecord | null = null;
-
   try {
     product = (await prisma.product.findUnique({
       where: { slug },
       include: {
-        variants: {
-          orderBy: { createdAt: "asc" },
-        },
-        images: {
-          orderBy: { sortOrder: "asc" },
-        },
+        variants: { orderBy: { createdAt: "asc" } },
+        images: { orderBy: { sortOrder: "asc" } },
       },
     })) as unknown as ProductRecord | null;
   } catch {
     product = null;
   }
-
   if (!product || !product.isActive) {
     notFound();
   }
-
   const minPrice = product.variants.length
     ? Math.min(...product.variants.map((variant: ProductPageVariant) => variant.priceKobo))
     : 0;
-
-  // Charme set hardcoded gallery
   const imageAlt = product?.name || "TORÉA product";
 
   // Recently viewed products (client-side only)
@@ -133,36 +124,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   return (
     <div className="grid gap-8 pb-16 md:grid-cols-2">
-      <div className="w-full">
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 p-2 bg-zinc-100 rounded-2xl">
-          {product.images && product.images.length > 0 ? (
-            product.images.map((img, idx) => (
-              <div key={img.cloudflareImageId || idx} className="flex flex-col items-center">
-                <Image
-                  src={img.cloudflareImageId
-                    ? `https://imagedelivery.net/${process.env.NEXT_PUBLIC_CLOUDFLARE_IMAGES_ACCOUNT_HASH || process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH}/${img.cloudflareImageId}/public`
-                    : "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1200&auto=format&fit=crop"}
-                  alt={product.name + " " + (img.color ? img.color : "")}
-                  width={120}
-                  height={150}
-                  className="rounded-lg object-cover border border-zinc-200 w-full h-auto max-w-[120px] max-h-[150px]"
-                  sizes="(max-width: 640px) 80px, (max-width: 1024px) 100px, 120px"
-                  priority={idx === 0}
-                />
-                <span className="text-xs mt-1 text-center break-words w-full">{img.color ? img.color : ""}</span>
-              </div>
-            ))
-          ) : (
-            <Image
-              src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1200&auto=format&fit=crop"
-              alt={product.name}
-              width={120}
-              height={150}
-              className="rounded-lg object-cover border border-zinc-200 w-full h-auto max-w-[120px] max-h-[150px]"
-            />
-          )}
-        </div>
-      </div>
+      <ProductGallery
+        images={product.images}
+        name={product.name}
+        colors={product.availableColors || []}
+        cloudflareHash={process.env.NEXT_PUBLIC_CLOUDFLARE_IMAGES_ACCOUNT_HASH || process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH || ""}
+      />
       <div className="space-y-5 relative">
         <h1 className="text-3xl font-semibold text-zinc-900">{product?.name}</h1>
         <p className="text-xl text-zinc-700">

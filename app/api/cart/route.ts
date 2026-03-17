@@ -149,11 +149,13 @@ async function fromCookieMap(map: Record<string, number>): Promise<CartResponse>
     if (key.startsWith("variant:")) {
       const variantId = key.replace("variant:", "");
       const variantItem = variantLookup.get(variantId);
-
+      // Check for custom imageUrl
+      const customImageUrl = map[`${key}:imageUrl`];
       if (variantItem) {
         return {
           ...variantItem,
           quantity,
+          imageUrl: customImageUrl || variantItem.imageUrl,
         };
       }
     }
@@ -161,7 +163,8 @@ async function fromCookieMap(map: Record<string, number>): Promise<CartResponse>
     const fallbackSlug = fallbackSlugFromKey(key);
     const fallbackItem = fallbackLookup.get(fallbackSlug);
     const fallbackMeta = parseFallbackMeta(key);
-
+    // Check for custom imageUrl
+    const customImageUrl = map[`${key}:imageUrl`];
     return {
       key,
       name: fallbackItem?.name || `TORÉA ${fallbackNameFromKey(key)}`,
@@ -169,7 +172,7 @@ async function fromCookieMap(map: Record<string, number>): Promise<CartResponse>
       color: fallbackMeta.color,
       quantity,
       priceKobo: fallbackItem?.priceKobo || 4000000,
-      imageUrl: fallbackItem?.imageUrl || fallbackImageForKey(key),
+      imageUrl: customImageUrl || fallbackItem?.imageUrl || fallbackImageForKey(key),
     };
   });
 
@@ -244,7 +247,7 @@ export async function GET() {
 }
 
 export async function PATCH(req: Request) {
-  const payload = (await req.json()) as { key: string; action: "increment" | "decrement" | "remove" };
+  const payload = (await req.json()) as { key: string; action: "increment" | "decrement" | "remove"; imageUrl?: string };
   const { userId } = await auth();
 
   if (!payload?.key || !payload?.action) {
@@ -266,8 +269,8 @@ export async function PATCH(req: Request) {
         if (payload.action === "increment") {
           await prisma.cartItem.upsert({
             where: { cartId_variantId: { cartId: cart.id, variantId } },
-            update: { quantity: { increment: 1 } },
-            create: { cartId: cart.id, variantId, quantity: 1 },
+            update: { quantity: { increment: 1 }, imageUrl: payload.imageUrl || undefined },
+            create: { cartId: cart.id, variantId, quantity: 1, imageUrl: payload.imageUrl || undefined },
           });
         }
 
@@ -289,9 +292,7 @@ export async function PATCH(req: Request) {
         }
 
         if (payload.action === "remove") {
-          await prisma.cartItem.deleteMany({
-            where: { cartId: cart.id, variantId },
-          });
+          await prisma.cartItem.deleteMany({ where: { cartId: cart.id, variantId } });
         }
 
         const dbCart = await fromDatabase(userId);
@@ -306,6 +307,10 @@ export async function PATCH(req: Request) {
 
   if (payload.action === "increment") {
     map[payload.key] = (map[payload.key] || 0) + 1;
+    // Store imageUrl for fallback keys
+    if (payload.imageUrl) {
+      map[`${payload.key}:imageUrl`] = payload.imageUrl;
+    }
   }
 
   if (payload.action === "decrement") {

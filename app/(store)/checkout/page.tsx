@@ -65,19 +65,11 @@ type CartItem = {
 };
 
 const lagosOptions = [
-  { id: "lag-mainland", label: "Lagos Mainland", eta: "Takes 24-48 working hours", priceKobo: 450000 },
-  { id: "lag-island", label: "Lagos Island", eta: "Takes 24-48 working hours", priceKobo: 500000 },
-  { id: "lag-tier", label: "Lagos Tier 2", eta: "Takes 48-72 working hours", priceKobo: 550000 },
-  { id: "lag-outskirts", label: "Lagos Outskirts", eta: "Takes 48-72 working hours", priceKobo: 600000 },
+  { id: "lag-mainland", label: "Lagos Mainland", eta: "Takes 24-48 working hours", priceKobo: 300000 },
+  { id: "lag-island", label: "Lagos Island", eta: "Takes 24-48 working hours", priceKobo: 300000 },
+  { id: "lag-outskirts", label: "Lagos Outskirts", eta: "Takes 48-72 working hours", priceKobo: 500000 },
 ];
-const regionalOptions = [
-  { id: "sw", label: "South West", eta: "Takes 2-3 working days", priceKobo: 650000 },
-  { id: "se", label: "South East", eta: "Takes 2-4 working days", priceKobo: 700000 },
-  { id: "ss", label: "South South", eta: "Takes 2-4 working days", priceKobo: 700000 },
-  { id: "nc", label: "North Central", eta: "Takes 3-5 working days", priceKobo: 850000 },
-  { id: "ne", label: "North East", eta: "Takes 3-6 working days", priceKobo: 950000 },
-  { id: "nw", label: "North West", eta: "Takes 3-6 working days", priceKobo: 950000 },
-];
+// regionalOptions removed
 const states = [
   "Lagos",
   "Abuja (FCT)",
@@ -93,23 +85,16 @@ const states = [
 
   const shippingOptions = useMemo(() => {
     const lagosOptions = [
-      { id: "lag-mainland", label: "Lagos Mainland", eta: "Takes 24-48 working hours", priceKobo: 450000 },
-      { id: "lag-island", label: "Lagos Island", eta: "Takes 24-48 working hours", priceKobo: 500000 },
-      { id: "lag-tier", label: "Lagos Tier 2", eta: "Takes 48-72 working hours", priceKobo: 550000 },
-      { id: "lag-outskirts", label: "Lagos Outskirts", eta: "Takes 48-72 working hours", priceKobo: 600000 },
+      { id: "lag-mainland", label: "Lagos Mainland", eta: "Takes 24-48 working hours", priceKobo: 300000 },
+      { id: "lag-island", label: "Lagos Island", eta: "Takes 24-48 working hours", priceKobo: 300000 },
+      { id: "lag-outskirts", label: "Lagos Outskirts", eta: "Takes 48-72 working hours", priceKobo: 500000 },
     ];
-    const regionalOptions = [
-      { id: "sw", label: "South West", eta: "Takes 2-3 working days", priceKobo: 650000 },
-      { id: "se", label: "South East", eta: "Takes 2-4 working days", priceKobo: 700000 },
-      { id: "ss", label: "South South", eta: "Takes 2-4 working days", priceKobo: 700000 },
-      { id: "nc", label: "North Central", eta: "Takes 3-5 working days", priceKobo: 850000 },
-    ];
-    return state.toLowerCase() === "lagos" ? lagosOptions : regionalOptions;
+    return lagosOptions;
   }, [state]);
   const displayedShippingOptions =
     deliveryType === "pickup"
       ? [{ id: "pickup", label: "Store Pickup", eta: "Ready in 24 working hours", priceKobo: 0 }]
-      : regionalOptions;
+      : lagosOptions;
   // ...existing code...
   useEffect(() => {
     let mounted = true;

@@ -102,12 +102,26 @@ export function ProductVariantPurchase({
       const key = selectedVariant && hasExactSelectedVariant
         ? `variant:${selectedVariant.id}`
         : `fallback:${slug}::size=${encodeCartPart(selectedSize || "M")}::color=${encodeCartPart(selectedColor || "Default")}`;
+
+      // Find imageUrl for selected color
+      let imageUrl = "";
+      if (images && images.length > 0) {
+        const colorImg = images.find(
+          (img) => normalize(img.color) === normalize(selectedColor)
+        );
+        if (colorImg) {
+          imageUrl = colorImg.cloudflareImageId
+            ? `https://imagedelivery.net/${process.env.NEXT_PUBLIC_CLOUDFLARE_IMAGES_ACCOUNT_HASH || process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH}/${colorImg.cloudflareImageId}/public`
+            : colorImg.imageUrl || "";
+        }
+      }
+
       const response = await fetch("/api/cart", {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ key, action: "increment" }),
+        body: JSON.stringify({ key, action: "increment", imageUrl }),
       });
 
       if (!response.ok) {
