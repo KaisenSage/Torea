@@ -3,7 +3,16 @@
 import Image from "next/image";
 import { useState } from "react";
 
-export default function ProductGallery({ images = [], name = "", colors = [], cloudflareHash = "" }) {
+type ProductGalleryImage = { cloudflareImageId: string; color?: string };
+
+interface ProductGalleryProps {
+  images?: ProductGalleryImage[];
+  name?: string;
+  colors?: string[];
+  cloudflareHash?: string;
+}
+
+export default function ProductGallery({ images = [], name = "", colors = [], cloudflareHash = "" }: ProductGalleryProps) {
   const [selectedImage, setSelectedImage] = useState(0);
   return (
     <div className="flex w-full">

@@ -149,13 +149,10 @@ async function fromCookieMap(map: Record<string, number>): Promise<CartResponse>
     if (key.startsWith("variant:")) {
       const variantId = key.replace("variant:", "");
       const variantItem = variantLookup.get(variantId);
-      // Check for custom imageUrl
-      const customImageUrl = map[`${key}:imageUrl`];
       if (variantItem) {
         return {
           ...variantItem,
           quantity,
-          imageUrl: customImageUrl || variantItem.imageUrl,
         };
       }
     }
@@ -172,7 +169,7 @@ async function fromCookieMap(map: Record<string, number>): Promise<CartResponse>
       color: fallbackMeta.color,
       quantity,
       priceKobo: fallbackItem?.priceKobo || 4000000,
-      imageUrl: customImageUrl || fallbackItem?.imageUrl || fallbackImageForKey(key),
+      imageUrl: fallbackItem?.imageUrl || fallbackImageForKey(key),
     };
   });
 
@@ -307,10 +304,6 @@ export async function PATCH(req: Request) {
 
   if (payload.action === "increment") {
     map[payload.key] = (map[payload.key] || 0) + 1;
-    // Store imageUrl for fallback keys
-    if (payload.imageUrl) {
-      map[`${payload.key}:imageUrl`] = payload.imageUrl;
-    }
   }
 
   if (payload.action === "decrement") {

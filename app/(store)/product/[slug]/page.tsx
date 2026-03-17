@@ -127,7 +127,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
       <ProductGallery
         images={product.images}
         name={product.name}
-        colors={product.availableColors || []}
+        colors={
+          Array.isArray(product.availableColors)
+            ? product.availableColors
+            : typeof product.availableColors === "string" && product.availableColors
+              ? [product.availableColors]
+              : []
+        }
         cloudflareHash={process.env.NEXT_PUBLIC_CLOUDFLARE_IMAGES_ACCOUNT_HASH || process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH || ""}
       />
       <div className="space-y-5 relative">
