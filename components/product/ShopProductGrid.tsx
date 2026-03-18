@@ -27,17 +27,36 @@ export function ShopProductGrid({ items }: { items: ShopGridItem[] }) {
             canAdd={item.totalStock > 0}
             imageUrls={[item.imageUrl]}
           />
-          {item.slug !== "charme-set" && (
-              <div className="flex flex-wrap gap-2 text-xs">
-                <span className="rounded-full bg-zinc-100 px-2 py-1">
-                  {item.totalStock > 0 ? `${item.totalStock} in stock` : "Out of stock"}
-                </span>
-                {[...new Set(item.colors.map(c => c.trim().toLowerCase()))].map((color) => (
+          {item.slug === "charme-set" ? (
+            <div className="flex flex-wrap gap-2 text-xs">
+              <span className="rounded-full bg-zinc-100 px-2 py-1">15 available</span>
+              <span className="rounded-full bg-zinc-100 px-2 py-1">Two piece</span>
+              <span className="rounded-full bg-zinc-100 px-2 py-1">Tops</span>
+            </div>
+          ) : (
+            <div className="flex flex-wrap gap-2 text-xs">
+              <span className="rounded-full bg-zinc-100 px-2 py-1">
+                {item.totalStock > 0 ? `${item.totalStock} in stock` : "Out of stock"}
+              </span>
+              {[...new Set(item.colors.map(c => c.trim().toLowerCase()))]
+                .filter((color) => {
+                  // Remove 'wine' for Corefit
+                  if (item.slug === "corefit") {
+                    return color !== "wine";
+                  }
+                  // Remove unwanted colors for Flexsuit
+                  if (item.slug === "flexsuit") {
+                    const unwantedFlexsuit = ["black", "blue", "mint green", "nude", "light brown"];
+                    return !unwantedFlexsuit.includes(color);
+                  }
+                  return true;
+                })
+                .map((color) => (
                   <span key={color} className="rounded-full bg-zinc-100 px-2 py-1">
                     {color.charAt(0).toUpperCase() + color.slice(1).toLowerCase()}
                   </span>
                 ))}
-              </div>
+            </div>
           )}
         </div>
       )),
