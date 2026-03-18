@@ -194,23 +194,42 @@ export function ProductVariantPurchase({
         <div>
           <p className="mb-2 text-sm font-medium text-zinc-900">Available colors</p>
           <div className="flex flex-wrap gap-2 text-xs">
-            {[...new Set(colors.map(c => normalize(c)))].map((color) => {
-              const active = color === normalize(selectedColor);
-              return (
-                <button
-                  key={color}
-                  type="button"
-                  onClick={() => setSelectedColor(color)}
-                  className={`rounded-full border px-3 py-1 transition ${
-                    active
-                      ? "border-black bg-black text-white"
-                      : "border-zinc-300 bg-white text-zinc-800 hover:border-zinc-400"
-                  }`}
-                >
-                  {color.charAt(0).toUpperCase() + color.slice(1)}
-                </button>
-              );
-            })}
+            {[...new Set(colors.map(c => normalize(c)))]
+              .filter((color) => {
+                // Remove unwanted colors for Flexsuit
+                if (normalize(slug) === "flexsuit") {
+                  const unwantedFlexsuit = ["blue", "mint green", "nude", "light brown"];
+                  return !unwantedFlexsuit.includes(color);
+                }
+                // Remove 'wine' for Corefit
+                if (normalize(slug) === "corefit") {
+                  const unwantedCorefit = ["wine"];
+                  return !unwantedCorefit.includes(color);
+                }
+                // Remove 'light sage green' for Vortex Compression
+                if (normalize(slug) === "vortex-compression") {
+                  const unwantedVortex = ["light sage green"];
+                  return !unwantedVortex.includes(color);
+                }
+                return true;
+              })
+              .map((color) => {
+                const active = color === normalize(selectedColor);
+                return (
+                  <button
+                    key={color}
+                    type="button"
+                    onClick={() => setSelectedColor(color)}
+                    className={`rounded-full border px-3 py-1 transition ${
+                      active
+                        ? "border-black bg-black text-white"
+                        : "border-zinc-300 bg-white text-zinc-800 hover:border-zinc-400"
+                    }`}
+                  >
+                    {color.charAt(0).toUpperCase() + color.slice(1)}
+                  </button>
+                );
+              })}
           </div>
         </div>
       </div>
