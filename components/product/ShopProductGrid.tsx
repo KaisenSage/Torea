@@ -28,16 +28,16 @@ export function ShopProductGrid({ items }: { items: ShopGridItem[] }) {
             imageUrls={[item.imageUrl]}
           />
           {item.slug !== "charme-set" && (
-            <div className="flex flex-wrap gap-2 text-xs">
-              <span className="rounded-full bg-zinc-100 px-2 py-1">
-                {item.totalStock > 0 ? `${item.totalStock} in stock` : "Out of stock"}
-              </span>
-              {item.colors.slice(0, 2).map((color) => (
-                <span key={String(color)} className="rounded-full bg-zinc-100 px-2 py-1">
-                  {String(color)}
+              <div className="flex flex-wrap gap-2 text-xs">
+                <span className="rounded-full bg-zinc-100 px-2 py-1">
+                  {item.totalStock > 0 ? `${item.totalStock} in stock` : "Out of stock"}
                 </span>
-              ))}
-            </div>
+                {[...new Set(item.colors.map(c => c.trim().toLowerCase()))].map((color) => (
+                  <span key={color} className="rounded-full bg-zinc-100 px-2 py-1">
+                    {color.charAt(0).toUpperCase() + color.slice(1).toLowerCase()}
+                  </span>
+                ))}
+              </div>
           )}
         </div>
       )),

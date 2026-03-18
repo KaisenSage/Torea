@@ -13,6 +13,7 @@ async function main() {
         name: product.name,
         description: product.description,
         category: product.category,
+        slug: product.slug,
         // ...add other fields as needed
       },
       create: {
@@ -20,29 +21,67 @@ async function main() {
         name: product.name,
         description: product.description,
         category: product.category,
+        slug: product.slug,
         // ...add other fields as needed
       },
     });
 
+    // For Charme set, remove all old images before inserting new ones
+    if (product.product_id === "charme-set") {
+      await prisma.productImage.deleteMany({ where: { productId: dbProduct.id } });
+    }
     // Upsert images for this product
     if (Array.isArray(product.images)) {
       for (const img of product.images) {
-        await prisma.productImage.upsert({
+        const color = img.color ? img.color.trim().toLowerCase() : null;
+        // Try to find existing image by productId and cloudflareImageId
+        const existingById = await prisma.productImage.findFirst({
           where: {
-            productId_color: {
-              productId: dbProduct.id,
-              color: img.color.trim().toLowerCase(),
-            },
-          },
-          update: {
-            cloudflareImageId: img.cloudflareImageId,
-          },
-          create: {
             productId: dbProduct.id,
-            color: img.color.trim().toLowerCase(),
             cloudflareImageId: img.cloudflareImageId,
           },
         });
+        if (existingById) {
+          await prisma.productImage.update({
+            where: { id: existingById.id },
+            data: {
+              color: color,
+              imageUrl: img.imageUrl,
+              alt: img.alt || null,
+              sortOrder: img.sortOrder || 0,
+            },
+          });
+        } else {
+          // Fallback: check by productId and color (for legacy/other updates)
+          const existingByColor = color ? await prisma.productImage.findFirst({
+            where: {
+              productId: dbProduct.id,
+              color: color,
+            },
+          }) : null;
+          if (existingByColor) {
+            await prisma.productImage.update({
+              where: { id: existingByColor.id },
+              data: {
+                cloudflareImageId: img.cloudflareImageId,
+                imageUrl: img.imageUrl,
+                alt: img.alt || null,
+                sortOrder: img.sortOrder || 0,
+              },
+            });
+          } else {
+            await prisma.productImage.create({
+              data: {
+                productId: dbProduct.id,
+                color: color,
+                cloudflareImageId: img.cloudflareImageId,
+                imageUrl: img.imageUrl,
+                alt: img.alt || null,
+                sortOrder: img.sortOrder || 0,
+              },
+            });
+          }
+        }
       }
     }
   }

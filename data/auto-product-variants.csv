@@ -1,0 +1,100 @@
+productId,sku,size,color,priceNgn,stock
+charme-set,charme-set-undefined-lavender,undefined,lavender,25990,10
+charme-set,charme-set-undefined-black,undefined,black,25990,10
+charme-set,charme-set-undefined-mint green,undefined,mint green,25990,10
+charme-set,charme-set-undefined-brown,undefined,brown,25990,10
+aero-sculpt-jumpsuit,aero-sculpt-jumpsuit-M-White,M,White,25990,10
+aero-sculpt-jumpsuit,aero-sculpt-jumpsuit-M-light brown,M,light brown,25990,10
+aero-sculpt-jumpsuit,aero-sculpt-jumpsuit-M-mint green,M,mint green,25990,10
+aero-sculpt-jumpsuit,aero-sculpt-jumpsuit-M-grey,M,grey,25990,10
+aero-sculpt-jumpsuit,aero-sculpt-jumpsuit-L-White,L,White,25990,10
+aero-sculpt-jumpsuit,aero-sculpt-jumpsuit-L-light brown,L,light brown,25990,10
+aero-sculpt-jumpsuit,aero-sculpt-jumpsuit-L-mint green,L,mint green,25990,10
+aero-sculpt-jumpsuit,aero-sculpt-jumpsuit-L-grey,L,grey,25990,10
+flexsuit,flexsuit-M-blue,M,blue,29990,10
+flexsuit,flexsuit-M-mint green,M,mint green,29990,10
+flexsuit,flexsuit-M-nude,M,nude,29990,10
+flexsuit,flexsuit-M-light brown,M,light brown,29990,10
+flexsuit,flexsuit-L-blue,L,blue,29990,10
+flexsuit,flexsuit-L-mint green,L,mint green,29990,10
+flexsuit,flexsuit-L-nude,L,nude,29990,10
+flexsuit,flexsuit-L-light brown,L,light brown,29990,10
+corefit,corefit-M-Burnt orange,M,Burnt orange,25990,10
+corefit,corefit-M-nude,M,nude,25990,10
+corefit,corefit-M-mint green,M,mint green,25990,10
+corefit,corefit-M-black,M,black,25990,10
+corefit,corefit-M-wine,M,wine,25990,10
+corefit,corefit-L-Burnt orange,L,Burnt orange,25990,10
+corefit,corefit-L-nude,L,nude,25990,10
+corefit,corefit-L-mint green,L,mint green,25990,10
+corefit,corefit-L-black,L,black,25990,10
+corefit,corefit-L-wine,L,wine,25990,10
+peak-fit,peak-fit-M-Brown,M,Brown,25990,8
+peak-fit,peak-fit-M-dark blue,M,dark blue,25990,8
+peak-fit,peak-fit-M-mint green,M,mint green,25990,8
+peak-fit,peak-fit-M-nude,M,nude,25990,8
+peak-fit,peak-fit-M-grey,M,grey,25990,8
+peak-fit,peak-fit-M-black,M,black,25990,8
+peak-fit,peak-fit-L-Brown,L,Brown,25990,8
+peak-fit,peak-fit-L-dark blue,L,dark blue,25990,8
+peak-fit,peak-fit-L-mint green,L,mint green,25990,8
+peak-fit,peak-fit-L-nude,L,nude,25990,8
+peak-fit,peak-fit-L-grey,L,grey,25990,8
+peak-fit,peak-fit-L-black,L,black,25990,8
+bum-covers,bum-covers-M-Black,M,Black,15990,5
+bum-covers,bum-covers-M-royal blue,M,royal blue,15990,5
+bum-covers,bum-covers-M-deep pink,M,deep pink,15990,5
+bum-covers,bum-covers-M-muted olive green,M,muted olive green,15990,5
+bum-covers,bum-covers-M-baby pink,M,baby pink,15990,5
+bum-covers,bum-covers-M-deep grey,M,deep grey,15990,5
+bum-covers,bum-covers-M-brown,M,brown,15990,5
+bum-covers,bum-covers-M-khaki,M,khaki,15990,5
+bum-covers,bum-covers-L-Black,L,Black,15990,5
+bum-covers,bum-covers-L-royal blue,L,royal blue,15990,5
+bum-covers,bum-covers-L-deep pink,L,deep pink,15990,5
+bum-covers,bum-covers-L-muted olive green,L,muted olive green,15990,5
+bum-covers,bum-covers-L-baby pink,L,baby pink,15990,5
+bum-covers,bum-covers-L-deep grey,L,deep grey,15990,5
+bum-covers,bum-covers-L-brown,L,brown,15990,5
+bum-covers,bum-covers-L-khaki,L,khaki,15990,5
+singlets,singlets-M-black,M,black,10990,5
+singlets,singlets-M-blue,M,blue,10990,5
+singlets,singlets-M-deep blue,M,deep blue,10990,5
+singlets,singlets-M-peach,M,peach,10990,5
+singlets,singlets-M-red,M,red,10990,5
+elevate-jacket-short-hand,elevate-jacket-short-hand-M-Baby pink,M,Baby pink,20990,10
+elevate-jacket-short-hand,elevate-jacket-short-hand-M-light blue,M,light blue,20990,10
+elevate-jacket-short-hand,elevate-jacket-short-hand-M-grey,M,grey,20990,10
+elevate-jacket-short-hand,elevate-jacket-short-hand-M-nude,M,nude,20990,10
+elevate-jacket-short-hand,elevate-jacket-short-hand-M-black,M,black,20990,10
+elevate-jacket-long-hands,elevate-jacket-long-hands-L-Wine,L,Wine,23990,5
+elevate-jacket-long-hands,elevate-jacket-long-hands-L-grey,L,grey,23990,5
+elevate-jacket-long-hands,elevate-jacket-long-hands-L-baby pink,L,baby pink,23990,5
+elevate-jacket-long-hands,elevate-jacket-long-hands-L-black,L,black,23990,5
+vortex-compression,vortex-compression-M-White,M,White,25990,10
+vortex-compression,vortex-compression-M-black,M,black,25990,10
+vortex-compression,vortex-compression-M-light sage green,M,light sage green,25990,10
+vortex-compression,vortex-compression-M-grey,M,grey,25990,10
+vortex-compression,vortex-compression-L-White,L,White,25990,10
+vortex-compression,vortex-compression-L-black,L,black,25990,10
+vortex-compression,vortex-compression-L-light sage green,L,light sage green,25990,10
+vortex-compression,vortex-compression-L-grey,L,grey,25990,10
+quarter-zip-compression-training-top,quarter-zip-compression-training-top-XL-Burgundy,XL,Burgundy,25990,5
+quarter-zip-compression-training-top,quarter-zip-compression-training-top-XL-dark blue,XL,dark blue,25990,5
+men-s-streetwear-track-pants,men-s-streetwear-track-pants-XL-Burgundy,XL,Burgundy,25990,8
+men-s-streetwear-track-pants,men-s-streetwear-track-pants-XL-black,XL,black,25990,8
+men-s-streetwear-track-pants,men-s-streetwear-track-pants-XL-grey,XL,grey,25990,8
+basic-cotton-tops,basic-cotton-tops-XL-White and black,XL,White and black,20990,5
+basic-cotton-tops,basic-cotton-tops-XL-grey and black,XL,grey and black,20990,5
+gym-shorts,gym-shorts-XL-Black,XL,Black,15990,10
+gym-shorts,gym-shorts-XL-light sage,XL,light sage,15990,10
+gym-shorts,gym-shorts-XL-green,XL,green,15990,10
+gym-shorts,gym-shorts-XL-grey g,XL,grey g,15990,10
+luxe-set,luxe-set-M-blue,M,blue,29990,10
+luxe-set,luxe-set-M-mint green,M,mint green,29990,10
+luxe-set,luxe-set-M-nude,M,nude,29990,10
+luxe-set,luxe-set-M-light brown,M,light brown,29990,10
+luxe-set,luxe-set-L-blue,L,blue,29990,10
+luxe-set,luxe-set-L-mint green,L,mint green,29990,10
+luxe-set,luxe-set-L-nude,L,nude,29990,10
+luxe-set,luxe-set-L-light brown,L,light brown,29990,10

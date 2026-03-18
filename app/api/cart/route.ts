@@ -11,6 +11,7 @@ type CartLineItem = {
   quantity: number;
   priceKobo: number;
   imageUrl: string;
+  product: any;
 };
 
 type CartResponse = {
@@ -59,7 +60,7 @@ async function fromCookieMap(map: Record<string, number>): Promise<CartResponse>
     .filter(Boolean);
 
   let variantLookup = new Map<string, CartLineItem>();
-  let fallbackLookup = new Map<string, { name: string; priceKobo: number; imageUrl: string }>();
+  let fallbackLookup = new Map<string, { name: string; priceKobo: number; imageUrl: string; product: any }>();
 
   if (variantIds.length > 0) {
     try {
@@ -70,7 +71,6 @@ async function fromCookieMap(map: Record<string, number>): Promise<CartResponse>
             include: {
               images: {
                 orderBy: { sortOrder: "asc" },
-                take: 1,
               },
             },
           },
@@ -87,10 +87,23 @@ async function fromCookieMap(map: Record<string, number>): Promise<CartResponse>
             color: variant.color || "Default",
             quantity: 0,
             priceKobo: variant.priceKobo,
-            imageUrl:
-              variant.product.images[0]?.cloudflareImageId && process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH
-                ? `https://imagedelivery.net/${process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH}/${variant.product.images[0].cloudflareImageId}/public`
-                : fallbackImageForKey(variant.product.slug),
+            imageUrl: (() => {
+              const images = variant.product.images || [];
+              const normalize = (str: string) => (str || "").toLowerCase().replace(/\s+/g, "");
+              const matched = images.find((img) => normalize(img.color ?? "") === normalize(variant.color ?? ""));
+              if (matched?.cloudflareImageId) {
+                return `https://imagedelivery.net/${process.env.NEXT_PUBLIC_CLOUDFLARE_IMAGES_ACCOUNT_HASH || process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH}/${matched.cloudflareImageId}/public`;
+              }
+              const fallback = images.find((img) => img.cloudflareImageId);
+              if (fallback) {
+                return `https://imagedelivery.net/${process.env.NEXT_PUBLIC_CLOUDFLARE_IMAGES_ACCOUNT_HASH || process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH}/${fallback.cloudflareImageId}/public`;
+              }
+              return fallbackImageForKey(variant.product.slug);
+            })(),
+            product: {
+              ...variant.product,
+              images: variant.product.images,
+            },
           },
         ]),
       );
@@ -114,7 +127,6 @@ async function fromCookieMap(map: Record<string, number>): Promise<CartResponse>
           },
           images: {
             orderBy: { sortOrder: "asc" },
-            take: 1,
           },
         },
       });
@@ -136,6 +148,10 @@ async function fromCookieMap(map: Record<string, number>): Promise<CartResponse>
               name: product.name,
               priceKobo: lowestPriceKobo,
               imageUrl,
+              product: {
+                ...product,
+                images: product.images,
+              },
             },
           ];
         }),
@@ -170,6 +186,7 @@ async function fromCookieMap(map: Record<string, number>): Promise<CartResponse>
       quantity,
       priceKobo: fallbackItem?.priceKobo || 4000000,
       imageUrl: fallbackItem?.imageUrl || fallbackImageForKey(key),
+      product: fallbackItem?.product || null,
     };
   });
 
@@ -194,7 +211,6 @@ async function fromDatabase(clerkId: string): Promise<CartResponse | null> {
                 include: {
                   images: {
                     orderBy: { sortOrder: "asc" },
-                    take: 1,
                   },
                 },
               },
@@ -209,18 +225,35 @@ async function fromDatabase(clerkId: string): Promise<CartResponse | null> {
     return { items: [] };
   }
 
-  const items: CartLineItem[] = cart.items.map((item) => ({
-    key: `variant:${item.variantId}`,
-    name: item.variant.product.name,
-    size: item.variant.size || "One size",
-    color: item.variant.color || "Default",
-    quantity: item.quantity,
-    priceKobo: item.variant.priceKobo,
-    imageUrl:
-      item.variant.product.images[0]?.cloudflareImageId && process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH
-        ? `https://imagedelivery.net/${process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH}/${item.variant.product.images[0].cloudflareImageId}/public`
-        : "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=300&auto=format&fit=crop",
-  }));
+  const items: CartLineItem[] = cart.items.map((item) => {
+    const images = item.variant.product.images || [];
+    const normalize = (str: string) => (str || "").toLowerCase().replace(/\s+/g, "");
+    const matched = images.find((img) => normalize(img.color ?? "") === normalize(item.variant.color ?? ""));
+    let imageUrl = "";
+    if (matched?.cloudflareImageId) {
+      imageUrl = `https://imagedelivery.net/${process.env.NEXT_PUBLIC_CLOUDFLARE_IMAGES_ACCOUNT_HASH || process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH}/${matched.cloudflareImageId}/public`;
+    } else {
+      const fallback = images.find((img) => img.cloudflareImageId);
+      if (fallback) {
+        imageUrl = `https://imagedelivery.net/${process.env.NEXT_PUBLIC_CLOUDFLARE_IMAGES_ACCOUNT_HASH || process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH}/${fallback.cloudflareImageId}/public`;
+      } else {
+        imageUrl = "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=300&auto=format&fit=crop";
+      }
+    }
+    return {
+      key: `variant:${item.variantId}`,
+      name: item.variant.product.name,
+      size: item.variant.size || "One size",
+      color: item.variant.color || "Default",
+      quantity: item.quantity,
+      priceKobo: item.variant.priceKobo,
+      imageUrl,
+      product: {
+        ...item.variant.product,
+        images: item.variant.product.images,
+      },
+    };
+  });
 
   return { items };
 }

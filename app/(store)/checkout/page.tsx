@@ -1,7 +1,12 @@
 "use client";
 
-// Placeholder for Luxe Set color-to-image mapping
-const luxeSetImages: Record<string, string> = {};
+// Luxe Set color-to-image mapping
+const luxeSetImages: Record<string, string> = {
+  "blue": "https://your.cloudflare.url/9dc956be-2fad-4f6c-c6a0-5096368e0200",
+  "mint green": "https://your.cloudflare.url/2530091a-2f46-470c-a629-a6225d99ea00",
+  "nude": "https://your.cloudflare.url/ef34d6ab-8cba-45ba-815c-f434b9479700",
+  "light brown": "https://your.cloudflare.url/ee920c49-3e5c-40af-210b-fe916ef0a700"
+};
 // Elevate Jacket (short hand) color-to-image mapping
 const elevateJacketShortHandImages: Record<string, string> = {
   "baby pink": "https://your.cloudflare.url/f9e5c3f0-091c-4f3a-203a-96be40c82000",
@@ -449,63 +454,13 @@ const states = [
               <div key={item.key} className="flex items-start justify-between gap-3">
                 <div className="flex items-start gap-3">
                   <div className="relative h-16 w-14 overflow-hidden rounded-md border border-zinc-200 bg-zinc-100">
-                    {(() => {
-                      let src = "";
-                      const colorNorm = item.color?.toLowerCase() || "";
-                      if (item.name.toLowerCase().includes("charme set") && charmeSetImages[colorNorm]) {
-                        src = charmeSetImages[colorNorm];
-                      } else if (item.name.toLowerCase().includes("elevate jacket (short hand)") && elevateJacketShortHandImages[colorNorm]) {
-                        src = elevateJacketShortHandImages[colorNorm];
-                      } else if (item.name.toLowerCase().includes("elevate jacket (long hands)") ) {
-                        // Hardcode color mapping (long hands)
-                        if (colorNorm === "grey") {
-                          src = "https://pub-bd618a9723f54128a9dbd24698f83fba.r2.dev/cloth%20torea/IMG_0671.PNG";
-                        } else if (colorNorm === "black") {
-                          src = "https://pub-bd618a9723f54128a9dbd24698f83fba.r2.dev/cloth%20torea/IMG_0660.PNG";
-                        } else if (colorNorm === "wine") {
-                          src = "https://pub-bd618a9723f54128a9dbd24698f83fba.r2.dev/cloth%20torea/IMG_0659.PNG";
-                        } else if (colorNorm === "baby pink") {
-                          src = "https://pub-bd618a9723f54128a9dbd24698f83fba.r2.dev/cloth%20torea/IMG_0669.PNG";
-                        }
-                      } else if (item.name.toLowerCase().includes("peak fit")) {
-                        // Hardcode color mapping for Peak Fit
-                        if (colorNorm === "black") {
-                          src = "https://pub-bd618a9723f54128a9dbd24698f83fba.r2.dev/cloth%20torea/IMG_0773.JPG";
-                        } else if (colorNorm === "green") {
-                          src = "https://pub-bd618a9723f54128a9dbd24698f83fba.r2.dev/cloth%20torea/IMG_0774.JPG";
-                        } else if (colorNorm === "white") {
-                          src = "https://pub-bd618a9723f54128a9dbd24698f83fba.r2.dev/cloth%20torea/IMG_0776.JPG";
-                        } else if (colorNorm === "grey") {
-                          src = "https://pub-bd618a9723f54128a9dbd24698f83fba.r2.dev/cloth%20torea/IMG_0772.JPG";
-                        }
-                      } else if (item.name.toLowerCase().includes("luxe set") && luxeSetImages[colorNorm]) {
-                        src = luxeSetImages[colorNorm];
-                      } else if (
-                        item.name.toLowerCase().includes("men’s streetwear track pants") ||
-                        item.name.toLowerCase().includes("mens streetwear track pants")
-                      ) {
-                        // Hardcode color mapping for Men's streetwear track pants
-                        if (colorNorm === "grey") {
-                          src = "https://pub-bd618a9723f54128a9dbd24698f83fba.r2.dev/cloth%20torea/IMG_9976.JPG";
-                        } else if (colorNorm === "burgundy") {
-                          src = "https://pub-bd618a9723f54128a9dbd24698f83fba.r2.dev/cloth%20torea/IMG_9980.JPG";
-                        } else if (colorNorm === "black") {
-                          src = "https://pub-bd618a9723f54128a9dbd24698f83fba.r2.dev/cloth%20torea/IMG_9979.JPG";
-                        }
-                      }
-                      return src ? (
-                        <Image
-                          src={item.imageUrl || src || "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1200&auto=format&fit=crop"}
-                          alt={item.name + (item.color ? ` (${item.color})` : "")}
-                          className="h-full w-full object-cover"
-                          width={300}
-                          height={400}
-                        />
-                      ) : null;
-                    })()}
-                    <span className="absolute -right-2 -top-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-black px-1 text-[11px] text-white">
-                      {item.quantity}
-                    </span>
+                    <Image
+                      src={item.imageUrl || "/placeholder.png"}
+                      alt={item.name + (item.color ? ` (${item.color})` : "")}
+                      width={56}
+                      height={80}
+                      className="object-cover w-full h-full"
+                    />
                   </div>
                   <div>
                     <p className="text-sm font-medium text-zinc-900">{item.name}</p>
@@ -560,3 +515,4 @@ const states = [
     </div>
   );
 }
+

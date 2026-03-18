@@ -94,6 +94,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
       ...product.variants.map((variant: ProductPageVariant) => variant.size).filter(Boolean).map((size: string | null) => String(size)),
     ]),
   );
+    // Sort sizes so M appears before L
+    sizes.sort((a, b) => {
+      if (a === 'M' && b === 'L') return -1;
+      if (a === 'L' && b === 'M') return 1;
+      return a.localeCompare(b);
+    });
   const colors = Array.from(
     new Set([
       ...(Array.isArray(product.availableColors) ? product.availableColors.map((color: unknown) => String(color)) : []),

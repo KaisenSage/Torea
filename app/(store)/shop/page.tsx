@@ -97,18 +97,18 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
     const prices = product.variants.map((variant: ShopVariant) => variant.priceKobo);
     const minPriceKobo = prices.length ? Math.min(...prices) : 0;
     const colorsFromMetadata = Array.isArray(product.availableColors)
-      ? product.availableColors.map((color: unknown) => String(color)).filter(Boolean)
+        ? product.availableColors.map((color: unknown) => String(color).toLowerCase().trim()).filter(Boolean)
       : [];
     const sizesFromMetadata = Array.isArray(product.availableSizes)
-      ? product.availableSizes.map((size: unknown) => String(size)).filter(Boolean)
+        ? product.availableSizes.map((size: unknown) => String(size).toLowerCase().trim()).filter(Boolean)
       : [];
     const colors = Array.from(
       new Set([
-        ...colorsFromMetadata,
-        ...product.variants
-          .map((variant: ShopVariant) => variant.color)
-          .filter(Boolean)
-          .map((color: string | null) => String(color)),
+          ...colorsFromMetadata,
+          ...product.variants
+            .map((variant: ShopVariant) => variant.color)
+            .filter(Boolean)
+            .map((color: string | null) => String(color).toLowerCase().trim()),
       ]),
     );
     const sizes = Array.from(

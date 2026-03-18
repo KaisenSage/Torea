@@ -164,7 +164,7 @@ export default function CartPage() {
                   <div className="flex gap-3">
                     <div className="relative h-20 w-16 overflow-hidden rounded-md bg-zinc-100">
                       <Image
-                        src={item.imageUrl || "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1200&auto=format&fit=crop"}
+                        src={item.imageUrl || "/placeholder.png"}
                         alt={item.name + (item.color ? ` (${item.color})` : "")}
                         fill
                         className="object-cover"

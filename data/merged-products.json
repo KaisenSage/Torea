@@ -4,21 +4,23 @@
     "slug": "charme-set",
     "name": "Charme set",
     "description": "Whether you’re heading to the gym, practicing yoga, running, or enjoying an active day out, this versatile set combines modern athletic style with everyday functionality.",
-    "category": "Bottoms",
+      "category": "Two piece",
     "subcategory": "Tops ",
     "price": "25,990",
-    ...existing code...
-    "colors": "Grey, mint green, nude, brown, dark blue, black",
+      "colors": "lavender, black, mint green, brown",
     "material": "Spandex ",
     "careInstructions": "",
-    "images": [
-      {"cloudflareImageId": "10fc736c-ff95-4d2a-95e8-307deca8e500", "color": "grey", "imageUrl": "https://your.cloudflare.url/10fc736c-ff95-4d2a-95e8-307deca8e500"},
-      {"cloudflareImageId": "d29240bd-025b-4624-b171-b974e8d7a200", "color": "mint green", "imageUrl": "https://your.cloudflare.url/d29240bd-025b-4624-b171-b974e8d7a200"},
-      {"cloudflareImageId": "110ef12e-38da-457a-5392-4cc39cc87e00", "color": "nude", "imageUrl": "https://your.cloudflare.url/110ef12e-38da-457a-5392-4cc39cc87e00"},
-      {"cloudflareImageId": "a703b788-9853-4923-fc02-b0405ce4bb00", "color": "brown", "imageUrl": "https://your.cloudflare.url/a703b788-9853-4923-fc02-b0405ce4bb00"},
-      {"cloudflareImageId": "323f308b-e203-4d6b-a6b7-679feef89400", "color": "dark blue", "imageUrl": "https://your.cloudflare.url/323f308b-e203-4d6b-a6b7-679feef89400"},
-      {"cloudflareImageId": "4d8d0e9d-a4ba-4e67-bec7-9000259a9c00", "color": "black", "imageUrl": "https://your.cloudflare.url/4d8d0e9d-a4ba-4e67-bec7-9000259a9c00"}
-    ]
+    "infoBubbles": [
+      "Seamless crop top & leggings",
+      "Soft, breathable spandex",
+      "Perfect for gym, yoga, athleisure"
+    ],
+      "images": [
+        {"cloudflareImageId": "d01984d8-a13b-4465-7fb1-281c3abd5c00", "color": "lavender", "imageUrl": "https://your.cloudflare.url/d01984d8-a13b-4465-7fb1-281c3abd5c00"},
+        {"cloudflareImageId": "a8ac0d83-20cf-43fa-2a7d-7296e2c13a00", "color": "black", "imageUrl": "https://your.cloudflare.url/a8ac0d83-20cf-43fa-2a7d-7296e2c13a00"},
+        {"cloudflareImageId": "ef7ab0bc-b2b8-4b95-46a2-c8145d1f6f00", "color": "mint green", "imageUrl": "https://your.cloudflare.url/ef7ab0bc-b2b8-4b95-46a2-c8145d1f6f00"},
+        {"cloudflareImageId": "ee2cc381-237d-4218-8a22-cd6e265eac00", "color": "brown", "imageUrl": "https://your.cloudflare.url/ee2cc381-237d-4218-8a22-cd6e265eac00"}
+      ]
   },
   {
     "product_id": "aero-sculpt-jumpsuit",
@@ -45,12 +47,12 @@
     "slug": "flexsuit",
     "name": "Flexsuit",
     "description": "Made from a premium stretch cotton _spandex blend, the fabric is lightweight, breathable, and moisture-wicking to keep you cool and comfortable during workouts. The seamless construction reduces irritation while the open-back design adds both style and improved ventilation.",
-    "category": "Tops",
-    "subcategory": "Jumpsuit",
+    "category": "Jumpsuit",
+    "subcategory": "",
     "price": "29,990",
     "stock": "10",
     "sizes": "M, L",
-    "colors": "Burgundy , grey, black",
+        "colors": "blue, mint green, nude, light brown",
     "material": "Cotton ",
     "careInstructions": "",
       "images": [
@@ -64,7 +66,7 @@
     "slug": "corefit",
     "name": "Corefit",
     "description": "The high-waisted leggings provide gentle compression and support around the core, enhancing comfort and confidence whether you’re at the gym, practicing yoga, running, or enjoying an active day out.",
-    "category": "Tops",
+      "category": "Two piece",
     "subcategory": "Bottoms ",
     "price": "25,990",
     "stock": "10",
@@ -77,7 +79,7 @@
         {"cloudflareImageId": "34d4cf80-2510-44bf-f723-eeb9f2997b00", "color": "nude", "imageUrl": "https://your.cloudflare.url/34d4cf80-2510-44bf-f723-eeb9f2997b00"},
         {"cloudflareImageId": "0f6eb34d-1991-4450-6367-96c935047b00", "color": "mint green", "imageUrl": "https://your.cloudflare.url/0f6eb34d-1991-4450-6367-96c935047b00"},
         {"cloudflareImageId": "b32908ca-4317-4788-20c6-5599f083e400", "color": "black", "imageUrl": "https://your.cloudflare.url/b32908ca-4317-4788-20c6-5599f083e400"},
-        {"cloudflareImageId": "b3db7db5-bb78-41b0-7806-9e49994d3000", "color": "wine", "imageUrl": "https://your.cloudflare.url/b3db7db5-bb78-41b0-7806-9e49994d3000"}
+        {"cloudflareImageId": "b3db7db5-bb78-41b0-7806-9e49994d3000", "color": "light orange", "imageUrl": "https://your.cloudflare.url/b3db7db5-bb78-41b0-7806-9e49994d3000"}
       ]
   },
   {
@@ -85,7 +87,7 @@
     "slug": "peak-fit",
     "name": "Peak fit ",
     "description": "Designed for performance and style, the Women’s Seamless Gym Workout Set offers the perfect balance of comfort, flexibility, and support. This sleek two-piece set features a fitted camisole-style top paired with high-waisted shorts, creating a flattering and body-contouring silhouette that moves with you during every workout.",
-    "category": "Tops",
+      "category": "Two piece",
     "subcategory": "Bottoms ",
     "price": "25,990",
     "stock": "8",
@@ -111,11 +113,20 @@
     "subcategory": "Shorts",
     "price": "15,990",
     "stock": "5",
-    "sizes": "",
-    "colors": "",
+    "sizes": "M, L,",
+    "colors": "Black , royal blue , deep pink, muted olive green, baby pink, deep grey, brown, khaki",
     "material": "Cotton ",
     "careInstructions": "",
-    "images": []
+          "images": [
+            {"cloudflareImageId": "69dc94bb-27bf-48c1-3096-fe6b25cc8e00", "color": "black", "imageUrl": "https://your.cloudflare.url/69dc94bb-27bf-48c1-3096-fe6b25cc8e00"},
+            {"cloudflareImageId": "c7687db6-ea74-4086-868a-5303db36a100", "color": "royal blue", "imageUrl": "https://your.cloudflare.url/c7687db6-ea74-4086-868a-5303db36a100"},
+            {"cloudflareImageId": "a80b22bf-0aa0-40b0-48c6-df80174e9200", "color": "deep pink", "imageUrl": "https://your.cloudflare.url/a80b22bf-0aa0-40b0-48c6-df80174e9200"},
+            {"cloudflareImageId": "5f050473-35f9-4eae-501b-3a434098c200", "color": "muted olive green", "imageUrl": "https://your.cloudflare.url/5f050473-35f9-4eae-501b-3a434098c200"},
+            {"cloudflareImageId": "22b01531-ba66-4ceb-0496-b8bba47a6300", "color": "baby pink", "imageUrl": "https://your.cloudflare.url/22b01531-ba66-4ceb-0496-b8bba47a6300"},
+            {"cloudflareImageId": "10a06bea-c541-4b4d-0967-b7865cb40e00", "color": "deep grey", "imageUrl": "https://your.cloudflare.url/10a06bea-c541-4b4d-0967-b7865cb40e00"},
+            {"cloudflareImageId": "da04b5fa-2afa-42a4-bf64-72ca75649a00", "color": "brown", "imageUrl": "https://your.cloudflare.url/da04b5fa-2afa-42a4-bf64-72ca75649a00"},
+            {"cloudflareImageId": "2ab1a6ea-63cc-4008-823c-ace69b04b600", "color": "khaki", "imageUrl": "https://your.cloudflare.url/2ab1a6ea-63cc-4008-823c-ace69b04b600"}
+          ]
   },
   {
     "product_id": "singlets",
@@ -127,10 +138,12 @@
     "price": "10,990",
     "stock": "5",
     "sizes": "M",
-    "colors": "",
-    "material": "Cotton ",
-    "careInstructions": "",
-    "images": []
+      "colors": ["black", "blue", "deep blue", "peach", "red"],
+      "material": "Cotton ",
+      "careInstructions": "",
+      "images": [
+        {"cloudflareImageId": "f8dc58e6-98a9-40ba-b025-00539e821500", "color": "black", "imageUrl": "https://your.cloudflare.url/f8dc58e6-98a9-40ba-b025-00539e821500"}
+      ]
   },
   {
     "product_id": "elevate-jacket-short-hand",
@@ -206,10 +219,10 @@
     "colors": "Burgundy, dark blue ",
     "material": "Polyester/spandex blend ",
     "careInstructions": "",
-    "images": [{"cloudflareImageId": "190b3646-66e3-4e32-d4e5-72760ae60300", "color": "burgundy", "imageUrl": "https://your.cloudflare.url/190b3646-66e3-4e32-d4e5-72760ae60300"},
-      {"cloudflareImageId": "9aeec93c-916a-4bee-e452-8d40496dee00", "color": "darkblue", "imageUrl": "https://your.cloudflare.url/9aeec93c-916a-4bee-e452-8d40496dee00"}
-      
-    ]
+      "images": [
+        {"cloudflareImageId": "9173e1b2-a523-4c11-c2bf-e2cf2ebdfe00", "color": "burgundy", "imageUrl": "https://your.cloudflare.url/9173e1b2-a523-4c11-c2bf-e2cf2ebdfe00"},
+        {"cloudflareImageId": "c0dd50a5-580a-4e6a-9f4c-a964cb1bd100", "color": "dark blue", "imageUrl": "https://your.cloudflare.url/c0dd50a5-580a-4e6a-9f4c-a964cb1bd100"}
+      ]
   },
   {
     "product_id": "men-s-streetwear-track-pants",
@@ -267,5 +280,25 @@
         {"cloudflareImageId": "e5955eee-bf9a-4d45-a855-948a4ae77a00", "color": "green", "imageUrl": "https://your.cloudflare.url/e5955eee-bf9a-4d45-a855-948a4ae77a00"},
         {"cloudflareImageId": "7dfea221-8648-4667-8c30-0b19de190700", "color": "grey", "imageUrl": "https://your.cloudflare.url/7dfea221-8648-4667-8c30-0b19de190700"}
       ]
+  },
+  {
+    "product_id": "luxe-set",
+    "slug": "luxe-set",
+    "name": "Luxe set",
+    "description": "Elevate your activewear collection with the Women’s Seamless Gym Crop Top & Leggings Set, designed to combine comfort, performance, and modern style. This sleek two-piece set features a fitted short-sleeve crop top paired with high-waisted leggings that create a flattering, sculpted silhouette.",
+    "category": "Two piece",
+    "subcategory": "Two piece",
+    "price": "29,990",
+    "stock": "10",
+    "sizes": "M, L",
+    "colors": ["blue", "mint green", "nude", "light brown"],
+    "material": "Spandex ",
+    "careInstructions": "",
+    "images": [
+      {"cloudflareImageId": "9dc956be-2fad-4f6c-c6a0-5096368e0200", "color": "blue", "imageUrl": "https://your.cloudflare.url/9dc956be-2fad-4f6c-c6a0-5096368e0200"},
+      {"cloudflareImageId": "2530091a-2f46-470c-a629-a6225d99ea00", "color": "mint green", "imageUrl": "https://your.cloudflare.url/2530091a-2f46-470c-a629-a6225d99ea00"},
+      {"cloudflareImageId": "ef34d6ab-8cba-45ba-815c-f434b9479700", "color": "nude", "imageUrl": "https://your.cloudflare.url/ef34d6ab-8cba-45ba-815c-f434b9479700"},
+      {"cloudflareImageId": "ee920c49-3e5c-40af-210b-fe916ef0a700", "color": "light brown", "imageUrl": "https://your.cloudflare.url/ee920c49-3e5c-40af-210b-fe916ef0a700"}
+    ]
   }
 ]
