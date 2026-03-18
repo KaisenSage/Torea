@@ -82,7 +82,7 @@ export default async function StoreHomePage() {
         {/* Newsletter section placeholder: insert video below */}
         <div className="w-screen max-w-none relative left-1/2 right-1/2 -ml-[50vw] mb-10">
           <video
-            src="https://pub-bd618a9723f54128a9dbd24698f83fba.r2.dev/IMG_1140.mp4"
+            src="https://pub-bd618a9723f54128a9dbd24698f83fba.r2.dev/IMG_1140%202.mp4"
             autoPlay
             loop
             muted
