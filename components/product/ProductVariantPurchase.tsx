@@ -247,7 +247,7 @@ export function ProductVariantPurchase({
           </button>
         </div>
         {isOutOfStock && (
-          <div className="text-sm text-red-600 mt-1">This variant is out of stock.</div>
+          <div className="text-sm text-red-600 mt-1">Out of stock.</div>
         )}
         {error && !isOutOfStock && (
           <div className="text-sm text-red-600 mt-1">{error}</div>
