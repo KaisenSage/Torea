@@ -22,6 +22,7 @@ function generateOrderNumber() {
   return `TOREA-${Date.now()}`;
 }
 
+
 export async function createCheckoutSession(input: CheckoutInput) {
   const user = await requireSignedInUser();
 
@@ -38,6 +39,15 @@ export async function createCheckoutSession(input: CheckoutInput) {
 
   if (!cart || cart.items.length === 0) {
     throw new Error("Cart is empty");
+  }
+
+  // Stock validation: block checkout if any item exceeds current stock
+  for (const item of cart.items) {
+    if (!item.variant || item.variant.stock < item.quantity) {
+      throw new Error(
+        `Sorry, "${item.variant?.color || "Unknown"} ${item.variant?.size || ""}" is out of stock or not enough stock for your order.`
+      );
+    }
   }
 
   const subtotalKobo = cart.items.reduce(

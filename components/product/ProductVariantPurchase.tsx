@@ -42,6 +42,10 @@ export function ProductVariantPurchase({
   const [selectedSize, setSelectedSize] = useState(sizes[0] || "");
   const [selectedColor, setSelectedColor] = useState(colors[0] || "");
   const [isAdding, setIsAdding] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+
+
 
   // Find color images from variants (assume parent passes images array as prop)
   const colorImages = useMemo(() => {
@@ -55,10 +59,8 @@ export function ProductVariantPurchase({
       return null;
     }
 
-    const inStockVariants = variants.filter((variant) => variant.stock > 0);
-    const source = inStockVariants.length > 0 ? inStockVariants : variants;
-
-    const exact = source.find(
+    // Always prefer the exact selected variant, even if out of stock
+    const exact = variants.find(
       (variant) =>
         normalize(variant.size) === normalize(selectedSize) &&
         normalize(variant.color) === normalize(selectedColor),
@@ -67,17 +69,18 @@ export function ProductVariantPurchase({
       return exact;
     }
 
-    const sizeOnly = source.find((variant) => normalize(variant.size) === normalize(selectedSize));
+    // Fallbacks if exact does not exist at all
+    const sizeOnly = variants.find((variant) => normalize(variant.size) === normalize(selectedSize));
     if (sizeOnly) {
       return sizeOnly;
     }
 
-    const colorOnly = source.find((variant) => normalize(variant.color) === normalize(selectedColor));
+    const colorOnly = variants.find((variant) => normalize(variant.color) === normalize(selectedColor));
     if (colorOnly) {
       return colorOnly;
     }
 
-    return source[0] || null;
+    return variants[0] || null;
   }, [variants, selectedSize, selectedColor]);
 
   const hasExactSelectedVariant = useMemo(
@@ -91,19 +94,24 @@ export function ProductVariantPurchase({
     [variants, selectedSize, selectedColor],
   );
 
+
+  const selectedVariantStock = selectedVariant?.stock ?? 0;
+  const isOutOfStock = selectedVariantStock <= 0 && !fallbackEnabled;
+
+  const showOutOfStock = isOutOfStock;
+
   async function addSelectedToCart() {
-    if (isAdding || (totalStock <= 0 && !fallbackEnabled)) {
+    setError(null);
+    if (isAdding || isOutOfStock) {
+      // Should never happen, but double-protect
+      setError("This variant is out of stock.");
       return;
     }
-
     try {
       setIsAdding(true);
-
       const key = selectedVariant && hasExactSelectedVariant
         ? `variant:${selectedVariant.id}`
         : `fallback:${slug}::size=${encodeCartPart(selectedSize || "M")}::color=${encodeCartPart(selectedColor || "Default")}`;
-
-
       const response = await fetch("/api/cart", {
         method: "PATCH",
         headers: {
@@ -111,12 +119,13 @@ export function ProductVariantPurchase({
         },
         body: JSON.stringify({ key, action: "increment" }),
       });
-
       if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        setError(data?.error || "Unable to add to cart.");
         return;
       }
-
       window.dispatchEvent(new Event("cart:updated"));
+      // Only redirect if the item was actually added (response.ok)
       router.push("/cart");
       router.refresh();
     } finally {
@@ -222,15 +231,27 @@ export function ProductVariantPurchase({
         </div>
       </div>
 
-      <div className="flex gap-3">
-        <button
-          type="button"
-          onClick={addSelectedToCart}
-          disabled={isAdding || (totalStock <= 0 && !fallbackEnabled)}
-          className="inline-flex items-center rounded-full border border-black bg-black px-5 py-2 text-sm font-medium text-white transition hover:bg-zinc-900 hover:text-white disabled:cursor-not-allowed disabled:border-zinc-300 disabled:bg-zinc-100 disabled:text-zinc-400"
-        >
-          {isAdding ? "Adding..." : totalStock > 0 || fallbackEnabled ? "Add to cart" : "Unavailable"}
-        </button>
+      <div className="flex flex-col gap-2">
+        <div className="flex gap-3">
+          <button
+            type="button"
+            onClick={addSelectedToCart}
+            disabled={isAdding || isOutOfStock}
+            className="inline-flex items-center rounded-full border border-black bg-black px-5 py-2 text-sm font-medium text-white transition hover:bg-zinc-900 hover:text-white disabled:cursor-not-allowed disabled:border-zinc-300 disabled:bg-zinc-100 disabled:text-zinc-400"
+          >
+            {isAdding
+              ? "Adding..."
+              : isOutOfStock
+                ? "Out of stock"
+                : "Add to cart"}
+          </button>
+        </div>
+        {isOutOfStock && (
+          <div className="text-sm text-red-600 mt-1">This variant is out of stock.</div>
+        )}
+        {error && !isOutOfStock && (
+          <div className="text-sm text-red-600 mt-1">{error}</div>
+        )}
       </div>
     </>
   );

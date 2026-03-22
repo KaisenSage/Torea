@@ -296,7 +296,18 @@ export async function PATCH(req: Request) {
           create: { userId: dbUser.id },
         });
 
+
         if (payload.action === "increment") {
+          // Stock check
+          const variant = await prisma.productVariant.findUnique({ where: { id: variantId }, select: { stock: true } });
+          if (!variant || variant.stock <= 0) {
+            return NextResponse.json({ error: "Out of stock" }, { status: 400 });
+          }
+          const existing = await prisma.cartItem.findUnique({ where: { cartId_variantId: { cartId: cart.id, variantId } } });
+          const newQty = (existing?.quantity || 0) + 1;
+          if (newQty > variant.stock) {
+            return NextResponse.json({ error: "Not enough stock" }, { status: 400 });
+          }
           await prisma.cartItem.upsert({
             where: { cartId_variantId: { cartId: cart.id, variantId } },
             update: { quantity: { increment: 1 }, imageUrl: payload.imageUrl || undefined },
@@ -335,7 +346,20 @@ export async function PATCH(req: Request) {
 
   const map = await getCartCookieMap();
 
+
   if (payload.action === "increment") {
+    // Stock check for guests
+    if (payload.key.startsWith("variant:")) {
+      const variantId = payload.key.replace("variant:", "");
+      const variant = await prisma.productVariant.findUnique({ where: { id: variantId }, select: { stock: true } });
+      if (!variant || variant.stock <= 0) {
+        return NextResponse.json({ error: "Out of stock" }, { status: 400 });
+      }
+      const newQty = (map[payload.key] || 0) + 1;
+      if (newQty > variant.stock) {
+        return NextResponse.json({ error: "Not enough stock" }, { status: 400 });
+      }
+    }
     map[payload.key] = (map[payload.key] || 0) + 1;
   }
 

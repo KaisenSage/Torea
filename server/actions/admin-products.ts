@@ -1,7 +1,16 @@
-"use server";
 
+"use server";
 import { prisma } from "@/server/db/prisma";
 import { requireAdmin } from "@/server/auth/rbac";
+
+// Update stock for a product variant (admin only)
+export async function updateVariantStock(variantId: string, newStock: number) {
+  await requireAdmin();
+  return prisma.productVariant.update({
+    where: { id: variantId },
+    data: { stock: newStock },
+  });
+}
 
 type CreateProductInput = {
   name: string;
