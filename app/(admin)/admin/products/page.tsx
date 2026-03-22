@@ -8,9 +8,6 @@ export default async function AdminProductsPage() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold text-zinc-900">Products</h1>
-        <Link className="rounded-full bg-black px-4 py-2 text-xs font-semibold text-white" href="/admin/products/new">
-          New Product
-        </Link>
       </div>
 
       <div className="overflow-hidden rounded-xl border border-zinc-200 bg-white">
