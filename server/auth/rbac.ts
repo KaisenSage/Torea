@@ -12,21 +12,36 @@ export async function getCurrentDbUser() {
     return null;
   }
 
-  const existing = await prisma.user.findUnique({
+  // Try to find by Clerk ID first
+  let existing = await prisma.user.findUnique({
     where: { clerkId: userId },
   });
-
   if (existing) {
     return existing;
   }
 
+  // If not found, try to find by email (to avoid duplicate users)
   const clerkUser = await currentUser();
   const email = clerkUser?.emailAddresses?.[0]?.emailAddress;
-
   if (!email) {
     return null;
   }
+  existing = await prisma.user.findUnique({
+    where: { email },
+  });
+  if (existing) {
+    // Optionally, update the clerkId if missing
+    if (!existing.clerkId) {
+      await prisma.user.update({
+        where: { email },
+        data: { clerkId: userId },
+      });
+      existing.clerkId = userId;
+    }
+    return existing;
+  }
 
+  // Otherwise, create new user
   return prisma.user.create({
     data: {
       clerkId: userId,
