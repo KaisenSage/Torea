@@ -71,7 +71,7 @@ type CartItem = {
 
 const lagosOptions = [
   { id: "lag-mainland", label: "Lagos Mainland", eta: "Takes 24-48 working hours", priceKobo: 300000 },
-  { id: "lag-island", label: "Lagos Island", eta: "Takes 24-48 working hours", priceKobo: 300000 },
+  { id: "lag-island", label: "Lagos Island", eta: "Takes 24-48 working hours", priceKobo: 350000 },
   { id: "lag-outskirts", label: "Lagos Outskirts", eta: "Takes 48-72 working hours", priceKobo: 500000 },
 ];
 // regionalOptions removed
@@ -91,7 +91,7 @@ const states = [
   const shippingOptions = useMemo(() => {
     const lagosOptions = [
       { id: "lag-mainland", label: "Lagos Mainland", eta: "Takes 24-48 working hours", priceKobo: 300000 },
-      { id: "lag-island", label: "Lagos Island", eta: "Takes 24-48 working hours", priceKobo: 300000 },
+      { id: "lag-island", label: "Lagos Island", eta: "Takes 24-48 working hours", priceKobo: 350000 },
       { id: "lag-outskirts", label: "Lagos Outskirts", eta: "Takes 48-72 working hours", priceKobo: 500000 },
     ];
     return lagosOptions;
