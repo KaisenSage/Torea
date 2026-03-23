@@ -168,7 +168,10 @@ export function ProductVariantPurchase({
         <div>
           <p className="mb-2 text-sm font-medium text-zinc-900">Available sizes</p>
           <div className="flex flex-wrap gap-2 text-xs">
-            {sizes.map((size) => {
+            {(normalize(slug) === "vortex-compression"
+              ? sizes.filter((size) => normalize(size) !== "m")
+              : sizes
+            ).map((size) => {
               const active = normalize(size) === normalize(selectedSize);
               return (
                 <button
@@ -198,9 +201,9 @@ export function ProductVariantPurchase({
                   const unwantedFlexsuit = ["blue", "mint green", "nude", "light brown"];
                   return !unwantedFlexsuit.includes(color);
                 }
-                // Remove 'wine' for Corefit
+                // Remove 'wine' and 'nude' for Corefit
                 if (normalize(slug) === "corefit") {
-                  const unwantedCorefit = ["wine"];
+                  const unwantedCorefit = ["wine", "nude"];
                   return !unwantedCorefit.includes(color);
                 }
                 // Remove 'light sage green' for Vortex Compression
