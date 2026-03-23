@@ -211,6 +211,11 @@ export function ProductVariantPurchase({
                   const unwantedVortex = ["light sage green"];
                   return !unwantedVortex.includes(color);
                 }
+                // Remove 'light sage' for gym-shorts
+                if (normalize(slug) === "gym-shorts") {
+                  const unwantedGymShorts = ["light sage"];
+                  return !unwantedGymShorts.includes(color);
+                }
                 return true;
               })
               .map((color) => {
