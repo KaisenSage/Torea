@@ -1,8 +1,9 @@
 "use client";
 import { useState } from "react";
+import type { EditableVariant } from "./EditProductVariantsClient";
 
 
-export default function VariantTable({ variants }: { variants: any[] }) {
+export default function VariantTable({ variants }: { variants: EditableVariant[] }) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [stockValue, setStockValue] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
@@ -26,12 +27,12 @@ export default function VariantTable({ variants }: { variants: any[] }) {
       if (Array.isArray(data.variants)) {
         setVariantList(data.variants);
       }
-    } catch (err) {
+    } catch {
       // Ignore fetch errors, fallback to local update
     }
   }
 
-  const handleEdit = (variant: any) => {
+  const handleEdit = (variant: EditableVariant) => {
     setEditingId(variant.id);
     setStockValue(variant.stock);
     setError(null);
@@ -45,7 +46,7 @@ export default function VariantTable({ variants }: { variants: any[] }) {
     setSuccess(null);
   };
 
-  const handleSave = async (variant: any) => {
+  const handleSave = async (variant: EditableVariant) => {
     setLoading(true);
     setError(null);
     setSuccess(null);

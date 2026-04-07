@@ -17,6 +17,69 @@ export async function listAdminOrders() {
   });
 }
 
+export async function lookupAdminOrder(query: string) {
+  await requireAdmin();
+
+  const normalizedQuery = query.trim();
+
+  if (!normalizedQuery) {
+    return null;
+  }
+
+  const order = await prisma.order.findFirst({
+    where: {
+      OR: [
+        { orderNumber: normalizedQuery },
+        { shippingPhone: normalizedQuery },
+        { user: { email: normalizedQuery.toLowerCase() } },
+        { payment: { reference: normalizedQuery } },
+      ],
+    },
+    include: {
+      items: {
+        include: {
+          product: true,
+          variant: true,
+        },
+      },
+      user: true,
+      payment: true,
+    },
+  });
+
+  const payment = await prisma.paymentTransaction.findUnique({
+    where: { reference: normalizedQuery },
+    include: {
+      order: {
+        include: {
+          items: {
+            include: {
+              product: true,
+              variant: true,
+            },
+          },
+          user: true,
+        },
+      },
+    },
+  });
+
+  const webhook = await prisma.webhookEvent.findFirst({
+    where: {
+      provider: "PAYSTACK",
+      eventId: normalizedQuery,
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  return {
+    query: normalizedQuery,
+    order,
+    payment,
+    webhook,
+  };
+}
+
 export async function updateOrderStatus(orderId: string, status: OrderStatus) {
   await requireAdmin();
 

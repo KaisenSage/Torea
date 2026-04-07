@@ -3,6 +3,8 @@ import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/server/db/prisma";
 import { getCartCookieMap, setCartCookieMap } from "@/server/services/cart-cookie";
 
+type CartProduct = Record<string, unknown> | null;
+
 type CartLineItem = {
   key: string;
   name: string;
@@ -11,7 +13,7 @@ type CartLineItem = {
   quantity: number;
   priceKobo: number;
   imageUrl: string;
-  product: any;
+  product: CartProduct;
 };
 
 type CartResponse = {
@@ -60,7 +62,7 @@ async function fromCookieMap(map: Record<string, number>): Promise<CartResponse>
     .filter(Boolean);
 
   let variantLookup = new Map<string, CartLineItem>();
-  let fallbackLookup = new Map<string, { name: string; priceKobo: number; imageUrl: string; product: any }>();
+  let fallbackLookup = new Map<string, { name: string; priceKobo: number; imageUrl: string; product: CartProduct }>();
 
   if (variantIds.length > 0) {
     try {
@@ -177,7 +179,6 @@ async function fromCookieMap(map: Record<string, number>): Promise<CartResponse>
     const fallbackItem = fallbackLookup.get(fallbackSlug);
     const fallbackMeta = parseFallbackMeta(key);
     // Check for custom imageUrl
-    const customImageUrl = map[`${key}:imageUrl`];
     return {
       key,
       name: fallbackItem?.name || `TORÉA ${fallbackNameFromKey(key)}`,

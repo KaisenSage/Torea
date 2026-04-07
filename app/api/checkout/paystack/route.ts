@@ -1,7 +1,5 @@
-import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { createCheckoutSession } from "@/server/actions/checkout";
-import { initializePaystackTransaction } from "@/server/services/paystack";
 
 type CheckoutPayload = {
   deliveryType?: "ship" | "pickup";
@@ -21,18 +19,6 @@ type CheckoutPayload = {
     totalKobo: number;
   };
 };
-
-function normalizeEmailOrPhone(value: string) {
-  const raw = value.trim();
-
-  if (raw.includes("@")) {
-    return raw.toLowerCase();
-  }
-
-  // Paystack initialize requires an email; use a deterministic placeholder for phone-only checkout.
-  const sanitized = raw.replace(/\D/g, "");
-  return `${sanitized || "guest"}@guest.torea.store`;
-}
 
 export async function POST(req: Request) {
   try {
@@ -54,6 +40,7 @@ export async function POST(req: Request) {
 
     try {
       const session = await createCheckoutSession({
+        contactEmailOrPhone: payload.contact.emailOrPhone,
         shipping: {
           fullName,
           phone: payload.shipping.phone || payload.contact.emailOrPhone,
@@ -65,36 +52,27 @@ export async function POST(req: Request) {
       });
 
       return NextResponse.json({ authorizationUrl: session.authorizationUrl }, { status: 200 });
-    } catch {
-      // Fallback path allows payment testing when DB/cart is not fully wired yet.
-      const requestedTotalKobo = payload.totals?.totalKobo || 0;
-      if (requestedTotalKobo <= 0) {
-        return NextResponse.json({ error: "Cart is empty. Please add at least one item before checkout." }, { status: 400 });
-      }
-      const amountKobo = Math.max(requestedTotalKobo, 5000);
-      const reference = `psk_fallback_${randomUUID()}`;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Unable to create order before payment.";
+      const normalized = message.toLowerCase();
 
-      try {
-        const initialized = await initializePaystackTransaction({
-          email: normalizeEmailOrPhone(payload.contact.emailOrPhone),
-          amountKobo,
-          reference,
-          callbackUrl: `${process.env.NEXT_PUBLIC_APP_URL}/orders/thank-you?reference=${reference}`,
-          metadata: {
-            source: "checkout-fallback",
-          },
-        });
-
-        return NextResponse.json({ authorizationUrl: initialized.authorization_url }, { status: 200 });
-      } catch (error) {
-        const details = error instanceof Error ? error.message : "Unknown Paystack error";
+      if (normalized.includes("unauthorized")) {
         return NextResponse.json(
-          {
-            error: `Paystack initialization failed. ${details}`,
-          },
-          { status: 502 },
+          { error: "Please sign in before checkout. Guest checkout is temporarily disabled to prevent missing orders." },
+          { status: 401 },
         );
       }
+
+      if (normalized.includes("cart is empty") || normalized.includes("out of stock") || normalized.includes("not enough stock")) {
+        return NextResponse.json({ error: message }, { status: 400 });
+      }
+
+      console.error("Checkout session creation failed", error);
+
+      return NextResponse.json(
+        { error: "Unable to create your order before payment. No charge was started. Please try again." },
+        { status: 500 },
+      );
     }
   } catch {
     return NextResponse.json({ error: "Invalid checkout request payload." }, { status: 400 });

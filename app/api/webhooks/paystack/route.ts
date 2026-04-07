@@ -69,18 +69,24 @@ export async function POST(req: Request) {
     return NextResponse.json({ verified: false }, { status: 200 });
   }
 
-  const order = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
-    const paymentTx = await tx.paymentTransaction.findUnique({
-      where: { reference },
-      include: {
-        order: {
-          include: {
-            items: true,
-            user: true,
-          },
+  const existingPaymentTx = await prisma.paymentTransaction.findUnique({
+    where: { reference },
+    include: {
+      order: {
+        include: {
+          items: true,
+          user: true,
         },
       },
-    });
+    },
+  });
+
+  if (!existingPaymentTx) {
+    return NextResponse.json({ ok: true, orphanedPayment: true }, { status: 200 });
+  }
+
+  const order = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+    const paymentTx = await tx.paymentTransaction.findUnique({ where: { id: existingPaymentTx.id }, include: { order: { include: { items: true, user: true } } } });
 
     if (!paymentTx) {
       throw new Error("Payment transaction not found");

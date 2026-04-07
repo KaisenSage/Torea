@@ -28,10 +28,9 @@ type ProductCardProps = {
 };
 
 export function ProductCard(props: ProductCardProps) {
-  const { slug, name, priceKobo, cartKey, canAdd = true, colors } = props;
+  const { slug, name, priceKobo, cartKey, canAdd = true } = props;
   // Use product.images (from DB) or imageUrls prop for dynamic images
   let imageUrls: string[] = [];
-  // @ts-ignore: If images are attached to the product, use them
   if (props.images && Array.isArray(props.images) && props.images.length > 0) {
     imageUrls = props.images
       .map((img: { imageUrl: string; r2Url?: string; cloudflareImageId?: string } | string) => {
@@ -50,7 +49,7 @@ export function ProductCard(props: ProductCardProps) {
   const reducedMotion = useReducedMotion();
   const [isAdding, setIsAdding] = useState(false);
   const [added, setAdded] = useState(false);
-  const [currentImage, setCurrentImage] = useState(0);
+  const [currentImage] = useState(0);
 
   async function handleAddToCart(event: React.MouseEvent<HTMLButtonElement>) {
     event.preventDefault();
