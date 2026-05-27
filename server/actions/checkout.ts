@@ -9,6 +9,7 @@ import { initializePaystackTransaction } from "@/server/services/paystack";
 
 type CheckoutInput = {
   contactEmailOrPhone: string;
+  appBaseUrl?: string;
   shipping: {
     fullName: string;
     phone: string;
@@ -67,6 +68,20 @@ function parseFallbackKey(key: string) {
     size: sizePart ? decodeURIComponent(sizePart.replace("size=", "")) : "",
     color: colorPart ? decodeURIComponent(colorPart.replace("color=", "")) : "",
   };
+}
+
+function resolveAppBaseUrl(inputBaseUrl?: string) {
+  const candidate = inputBaseUrl || process.env.NEXT_PUBLIC_APP_URL;
+
+  if (!candidate) {
+    throw new Error("App URL is not configured for Paystack callback");
+  }
+
+  try {
+    return new URL(candidate).origin;
+  } catch {
+    throw new Error("App URL is invalid for Paystack callback");
+  }
 }
 
 async function getOrCreateGuestUser(input: CheckoutInput) {
@@ -303,7 +318,8 @@ export async function createCheckoutSession(input: CheckoutInput) {
     return createdOrder;
   });
 
-  const callbackUrl = `${process.env.NEXT_PUBLIC_APP_URL}/orders/thank-you?reference=${reference}`;
+  const appBaseUrl = resolveAppBaseUrl(input.appBaseUrl);
+  const callbackUrl = `${appBaseUrl}/orders/thank-you?reference=${reference}`;
 
   const initialized = await initializePaystackTransaction({
     email: user.email,
