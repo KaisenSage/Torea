@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/server/db/prisma";
 import { getCartCookieCount } from "@/server/services/cart-cookie";
-import { mergeCartCookieIntoDatabase } from "@/server/services/cart-merge";
 
 export async function GET() {
   const { userId } = await auth();
@@ -23,8 +22,6 @@ export async function GET() {
       return NextResponse.json({ count }, { status: 200 });
     }
 
-    await mergeCartCookieIntoDatabase(dbUser.id);
-
     const cart = await prisma.cart.findUnique({
       where: { userId: dbUser.id },
       select: {
@@ -41,6 +38,12 @@ export async function GET() {
         (sum: number, item: { quantity: number }) => sum + item.quantity,
         0,
       ) ?? 0;
+
+    if (count === 0) {
+      const cookieCount = await getCartCookieCount();
+      return NextResponse.json({ count: cookieCount }, { status: 200 });
+    }
+
     return NextResponse.json({ count }, { status: 200 });
   } catch {
     const count = await getCartCookieCount();
