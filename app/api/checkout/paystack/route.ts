@@ -83,6 +83,16 @@ export async function POST(req: Request) {
       }
 
       if (
+        normalized.includes("temporarily unreachable") ||
+        normalized.includes("dns resolution failed")
+      ) {
+        return NextResponse.json(
+          { error: "Paystack is temporarily unavailable from this server. No charge was started. Please try again shortly." },
+          { status: 503 },
+        );
+      }
+
+      if (
         normalized.includes("paystack") ||
         normalized.includes("app url") ||
         normalized.includes("callback") ||
