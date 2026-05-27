@@ -72,6 +72,17 @@ export async function POST(req: Request) {
       }
 
       if (
+        normalized.includes("can't reach database server") ||
+        normalized.includes("reach database server") ||
+        normalized.includes("p1001")
+      ) {
+        return NextResponse.json(
+          { error: "Database is temporarily unavailable. No order was created. Please try again in a moment." },
+          { status: 503 },
+        );
+      }
+
+      if (
         normalized.includes("paystack") ||
         normalized.includes("app url") ||
         normalized.includes("callback") ||

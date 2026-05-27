@@ -5,6 +5,7 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "@/server/db/prisma";
 import { getCurrentDbUser } from "@/server/auth/rbac";
 import { getCartCookieMap } from "@/server/services/cart-cookie";
+import { mergeCartCookieIntoDatabase } from "@/server/services/cart-merge";
 import { initializePaystackTransaction } from "@/server/services/paystack";
 
 type CheckoutInput = {
@@ -267,7 +268,25 @@ function assertStockAvailability(items: ResolvedCheckoutItem[]) {
 export async function createCheckoutSession(input: CheckoutInput) {
   const signedInUser = await getCurrentDbUser();
   const user = signedInUser ?? (await getOrCreateGuestUser(input));
-  const items = signedInUser ? await resolveSignedInCartItems(user.id) : await resolveGuestCartItems();
+  let items: ResolvedCheckoutItem[];
+
+  if (signedInUser) {
+    await mergeCartCookieIntoDatabase(user.id);
+
+    try {
+      items = await resolveSignedInCartItems(user.id);
+    } catch (error) {
+      const message = error instanceof Error ? error.message.toLowerCase() : "";
+
+      if (!message.includes("cart is empty")) {
+        throw error;
+      }
+
+      items = await resolveGuestCartItems();
+    }
+  } else {
+    items = await resolveGuestCartItems();
+  }
 
   assertStockAvailability(items);
 
