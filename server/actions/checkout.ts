@@ -10,6 +10,7 @@ import { initializePaystackTransaction } from "@/server/services/paystack";
 
 type CheckoutInput = {
   contactEmailOrPhone: string;
+  appBaseUrl?: string;
   shipping: {
     fullName: string;
     phone: string;
@@ -70,6 +71,20 @@ function parseFallbackKey(key: string) {
   };
 }
 
+function resolveAppBaseUrl(inputBaseUrl?: string) {
+  const candidate = inputBaseUrl || process.env.NEXT_PUBLIC_APP_URL;
+
+  if (!candidate) {
+    throw new Error("App URL is not configured for Paystack callback");
+  }
+
+  try {
+    return new URL(candidate).origin;
+  } catch {
+    throw new Error("App URL is invalid for Paystack callback");
+  }
+}
+
 async function getOrCreateGuestUser(input: CheckoutInput) {
   const email = normalizeGuestEmailOrPhone(input.contactEmailOrPhone);
   const existingUser = await prisma.user.findUnique({
@@ -114,7 +129,7 @@ async function resolveSignedInCartItems(userId: string): Promise<ResolvedCheckou
 
   return cart.items.map((item) => {
     if (!item.variant) {
-      throw new Error("A cart item is missing its product variant.");
+      throw new Error("One of the items in your cart is no longer available.");
     }
 
     return {
@@ -306,7 +321,8 @@ export async function createCheckoutSession(input: CheckoutInput) {
     return createdOrder;
   });
 
-  const callbackUrl = `${process.env.NEXT_PUBLIC_APP_URL}/orders/thank-you?reference=${reference}`;
+  const appBaseUrl = resolveAppBaseUrl(input.appBaseUrl);
+  const callbackUrl = `${appBaseUrl}/orders/thank-you?reference=${reference}`;
 
   const initialized = await initializePaystackTransaction({
     email: user.email,

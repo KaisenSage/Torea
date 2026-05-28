@@ -41,21 +41,28 @@ function getPaystackSecretKey() {
 }
 
 export async function initializePaystackTransaction(input: InitializePaystackInput) {
-  const res = await fetch(`${PAYSTACK_BASE_URL}/transaction/initialize`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${getPaystackSecretKey()}`,
-    },
-    body: JSON.stringify({
-      email: input.email,
-      amount: input.amountKobo,
-      reference: input.reference,
-      callback_url: input.callbackUrl,
-      currency: "NGN",
-      metadata: input.metadata,
-    }),
-  });
+  let res: Response;
+
+  try {
+    res = await fetch(`${PAYSTACK_BASE_URL}/transaction/initialize`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${getPaystackSecretKey()}`,
+      },
+      body: JSON.stringify({
+        email: input.email,
+        amount: input.amountKobo,
+        reference: input.reference,
+        callback_url: input.callbackUrl,
+        currency: "NGN",
+        metadata: input.metadata,
+      }),
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unknown Paystack network error";
+    throw new Error(`Paystack is temporarily unreachable: ${message}`);
+  }
 
   if (!res.ok) {
     let providerMessage = "";
@@ -84,12 +91,19 @@ export async function initializePaystackTransaction(input: InitializePaystackInp
 }
 
 export async function verifyPaystackTransaction(reference: string) {
-  const res = await fetch(`${PAYSTACK_BASE_URL}/transaction/verify/${reference}`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${getPaystackSecretKey()}`,
-    },
-  });
+  let res: Response;
+
+  try {
+    res = await fetch(`${PAYSTACK_BASE_URL}/transaction/verify/${reference}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${getPaystackSecretKey()}`,
+      },
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unknown Paystack network error";
+    throw new Error(`Paystack is temporarily unreachable: ${message}`);
+  }
 
   if (!res.ok) {
     throw new Error(`Paystack verify failed with status ${res.status}`);

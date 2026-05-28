@@ -24,6 +24,7 @@ export async function POST(req: Request) {
   try {
     const payload = (await req.json()) as CheckoutPayload;
     const deliveryType = payload.deliveryType || "ship";
+    const appBaseUrl = new URL(req.url).origin;
 
     const fullName = `${payload.shipping.firstName || "Pickup"} ${payload.shipping.lastName || "Customer"}`.trim();
     const safeLine1 = payload.shipping.line1 || "TORÉA Studio Pickup";
@@ -41,6 +42,7 @@ export async function POST(req: Request) {
     try {
       const session = await createCheckoutSession({
         contactEmailOrPhone: payload.contact.emailOrPhone,
+        appBaseUrl,
         shipping: {
           fullName,
           phone: payload.shipping.phone || payload.contact.emailOrPhone,
@@ -63,8 +65,24 @@ export async function POST(req: Request) {
         );
       }
 
-      if (normalized.includes("cart is empty") || normalized.includes("out of stock") || normalized.includes("not enough stock")) {
+      if (
+        normalized.includes("cart is empty") ||
+        normalized.includes("out of stock") ||
+        normalized.includes("not enough stock") ||
+        normalized.includes("no longer available") ||
+        normalized.includes("couldn't match")
+      ) {
         return NextResponse.json({ error: message }, { status: 400 });
+      }
+
+      if (
+        normalized.includes("paystack initialize failed") ||
+        normalized.includes("paystack is temporarily unreachable") ||
+        normalized.includes("paystack_secret_key") ||
+        normalized.includes("app url is not configured") ||
+        normalized.includes("app url is invalid")
+      ) {
+        return NextResponse.json({ error: message }, { status: 500 });
       }
 
       console.error("Checkout session creation failed", error);
