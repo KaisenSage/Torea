@@ -311,8 +311,8 @@ export async function PATCH(req: Request) {
           }
           await prisma.cartItem.upsert({
             where: { cartId_variantId: { cartId: cart.id, variantId } },
-            update: { quantity: { increment: 1 } },
-            create: { cartId: cart.id, variantId, quantity: 1 },
+            update: { quantity: { increment: 1 }, imageUrl: payload.imageUrl || undefined },
+            create: { cartId: cart.id, variantId, quantity: 1, imageUrl: payload.imageUrl || undefined },
           });
         }
 
