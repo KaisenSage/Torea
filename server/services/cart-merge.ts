@@ -23,11 +23,6 @@ type MergeableCartItem = {
   quantity: number;
 };
 
-type VariantInventory = {
-  stock: number;
-  allowBackorder: boolean;
-};
-
 async function resolveCookieCartItems(): Promise<MergeableCartItem[]> {
   const map = await getCartCookieMap();
   const entries = Object.entries(map).filter(([key, quantity]) => quantity > 0 && !key.endsWith(":imageUrl"));
@@ -124,62 +119,23 @@ export async function mergeCartCookieIntoDatabase(userId: string) {
     select: { id: true },
   });
 
-  const variantIds = Array.from(new Set(cookieItems.map((item) => item.variantId)));
-  const variants = await prisma.productVariant.findMany({
-    where: { id: { in: variantIds } },
-    select: {
-      id: true,
-      stock: true,
-      allowBackorder: true,
-    },
-  });
-  const variantInventoryMap = new Map<string, VariantInventory>(
-    variants.map((variant) => [variant.id, { stock: variant.stock, allowBackorder: variant.allowBackorder }]),
-  );
-
   for (const item of cookieItems) {
-    const inventory = variantInventoryMap.get(item.variantId);
-
-    if (!inventory) {
-      continue;
-    }
-
-    const existing = await prisma.cartItem.findUnique({
+    await prisma.cartItem.upsert({
       where: {
         cartId_variantId: {
           cartId: cart.id,
           variantId: item.variantId,
         },
       },
-      select: {
-        id: true,
-        quantity: true,
+      update: {
+        quantity: {
+          increment: item.quantity,
+        },
       },
-    });
-
-    const desiredQuantity = (existing?.quantity || 0) + item.quantity;
-    const finalQuantity = inventory.allowBackorder ? desiredQuantity : Math.min(desiredQuantity, inventory.stock);
-
-    if (finalQuantity <= 0) {
-      if (existing) {
-        await prisma.cartItem.delete({ where: { id: existing.id } });
-      }
-      continue;
-    }
-
-    if (existing) {
-      await prisma.cartItem.update({
-        where: { id: existing.id },
-        data: { quantity: finalQuantity },
-      });
-      continue;
-    }
-
-    await prisma.cartItem.create({
-      data: {
+      create: {
         cartId: cart.id,
         variantId: item.variantId,
-        quantity: finalQuantity,
+        quantity: item.quantity,
       },
     });
   }

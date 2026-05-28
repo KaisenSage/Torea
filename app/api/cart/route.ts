@@ -265,8 +265,14 @@ export async function GET() {
 
   if (userId) {
     try {
+      const dbUser = await prisma.user.findUnique({ where: { clerkId: userId }, select: { id: true } });
+
+      if (dbUser) {
+        await mergeCartCookieIntoDatabase(dbUser.id);
+      }
+
       const dbCart = await fromDatabase(userId);
-      if (dbCart && dbCart.items.length > 0) {
+      if (dbCart) {
         return NextResponse.json(dbCart, { status: 200 });
       }
     } catch {
