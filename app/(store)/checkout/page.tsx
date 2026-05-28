@@ -227,9 +227,6 @@ const states = [
           <div className="space-y-3 border-b border-zinc-200 pb-5">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold text-zinc-900">Contact</h2>
-              <Link href="/" className="text-sm text-zinc-700 underline underline-offset-4">
-                Sign in
-              </Link>
             </div>
             <label className="block text-sm">
               <span className="mb-1 block text-zinc-700">Email or mobile phone number</span>

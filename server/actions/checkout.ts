@@ -5,6 +5,7 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "@/server/db/prisma";
 import { getCurrentDbUser } from "@/server/auth/rbac";
 import { getCartCookieMap } from "@/server/services/cart-cookie";
+import { normalizeCartInventory } from "@/server/services/cart-inventory";
 import { initializePaystackTransaction } from "@/server/services/paystack";
 
 type CheckoutInput = {
@@ -94,6 +95,8 @@ async function getOrCreateGuestUser(input: CheckoutInput) {
 }
 
 async function resolveSignedInCartItems(userId: string): Promise<ResolvedCheckoutItem[]> {
+  await normalizeCartInventory(userId);
+
   const cart = await prisma.cart.findUnique({
     where: { userId },
     include: {

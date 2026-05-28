@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/server/db/prisma";
 import { getCartCookieCount } from "@/server/services/cart-cookie";
+import { normalizeCartInventory } from "@/server/services/cart-inventory";
 
 export async function GET() {
   const { userId } = await auth();
@@ -21,6 +22,8 @@ export async function GET() {
       const count = await getCartCookieCount();
       return NextResponse.json({ count }, { status: 200 });
     }
+
+    await normalizeCartInventory(dbUser.id);
 
     const cart = await prisma.cart.findUnique({
       where: { userId: dbUser.id },

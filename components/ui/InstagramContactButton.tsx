@@ -1,6 +1,24 @@
 import Link from "next/link";
 
-const instagramUrl = process.env.NEXT_PUBLIC_INSTAGRAM_URL || "https://instagram.com/";
+function resolveInstagramUrl() {
+  const rawValue = process.env.NEXT_PUBLIC_INSTAGRAM_URL?.trim() || "https://instagram.com/";
+
+  if (/^https?:\/\//i.test(rawValue)) {
+    return rawValue;
+  }
+
+  if (rawValue.startsWith("ttps://")) {
+    return `h${rawValue}`;
+  }
+
+  if (rawValue.startsWith("//")) {
+    return `https:${rawValue}`;
+  }
+
+  return `https://${rawValue.replace(/^\/+/, "")}`;
+}
+
+const instagramUrl = resolveInstagramUrl();
 
 export function InstagramContactButton() {
   return (

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/server/db/prisma";
 import { getCartCookieMap, setCartCookieMap } from "@/server/services/cart-cookie";
+import { normalizeCartInventory } from "@/server/services/cart-inventory";
 
 type CartProduct = Record<string, unknown> | null;
 
@@ -200,6 +201,8 @@ async function fromDatabase(clerkId: string): Promise<CartResponse | null> {
   if (!dbUser) {
     return null;
   }
+
+  await normalizeCartInventory(dbUser.id);
 
   const cart = await prisma.cart.findUnique({
     where: { userId: dbUser.id },

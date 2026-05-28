@@ -184,13 +184,13 @@ export function Header() {
             </Link>
 
             <Show when="signed-out">
-              <SignInButton mode="modal">
+              <SignInButton mode="redirect">
                 <button className="transition hover:opacity-70" type="button">
                   Sign In
                 </button>
               </SignInButton>
 
-              <SignUpButton mode="modal">
+              <SignUpButton mode="redirect">
                 <button
                   className="h-9 rounded-md border border-black/70 px-4 text-[11px] uppercase tracking-[0.2em] transition hover:bg-black/5"
                   type="button"
@@ -310,12 +310,12 @@ export function Header() {
               <div className="border-t border-black/10 pt-4" />
 
               <Show when="signed-out">
-                <SignInButton mode="modal">
+                <SignInButton mode="redirect">
                   <button className="block w-full text-left" type="button">
                     Sign In
                   </button>
                 </SignInButton>
-                <SignUpButton mode="modal">
+                <SignUpButton mode="redirect">
                   <button
                     className="mt-4 h-10 w-full rounded-md border border-black/70 px-4 text-left transition hover:bg-black/5"
                     type="button"
