@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/server/db/prisma";
 import { getCartCookieMap, setCartCookieMap } from "@/server/services/cart-cookie";
-import { mergeCartCookieIntoDatabase } from "@/server/services/cart-merge";
 
 type CartProduct = Record<string, unknown> | null;
 
@@ -265,12 +264,6 @@ export async function GET() {
 
   if (userId) {
     try {
-      const dbUser = await prisma.user.findUnique({ where: { clerkId: userId }, select: { id: true } });
-
-      if (dbUser) {
-        await mergeCartCookieIntoDatabase(dbUser.id);
-      }
-
       const dbCart = await fromDatabase(userId);
       if (dbCart) {
         return NextResponse.json(dbCart, { status: 200 });
@@ -298,8 +291,6 @@ export async function PATCH(req: Request) {
       const dbUser = await prisma.user.findUnique({ where: { clerkId: userId }, select: { id: true } });
 
       if (dbUser) {
-        await mergeCartCookieIntoDatabase(dbUser.id);
-
         const cart = await prisma.cart.upsert({
           where: { userId: dbUser.id },
           update: {},
