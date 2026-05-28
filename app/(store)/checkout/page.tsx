@@ -69,13 +69,6 @@ type CartItem = {
   imageUrl: string;
 };
 
-type RuntimeStatusResponse = {
-  paystack: {
-    configured: boolean;
-    missing: string[];
-  };
-};
-
 const lagosOptions = [
   { id: "lag-mainland", label: "Lagos Mainland", eta: "Takes 24-48 working hours", priceKobo: 300000 },
   { id: "lag-island", label: "Lagos Island", eta: "Takes 24-48 working hours", priceKobo: 350000 },
@@ -125,33 +118,6 @@ const states = [
       }
     }
     void loadCart();
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
-  useEffect(() => {
-    let mounted = true;
-
-    async function loadRuntimeStatus() {
-      try {
-        const response = await fetch("/api/system/runtime", { cache: "no-store" });
-        const data = (await response.json()) as RuntimeStatusResponse;
-
-        if (mounted) {
-          setPaystackReady(data.paystack.configured);
-          setMissingPaystackVars(data.paystack.missing);
-        }
-      } catch {
-        if (mounted) {
-          setPaystackReady(null);
-          setMissingPaystackVars([]);
-        }
-      }
-    }
-
-    void loadRuntimeStatus();
-
     return () => {
       mounted = false;
     };

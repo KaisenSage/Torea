@@ -23,7 +23,6 @@ type CheckoutPayload = {
 export async function POST(req: Request) {
   try {
     const payload = (await req.json()) as CheckoutPayload;
-    const appBaseUrl = new URL(req.url).origin;
     const deliveryType = payload.deliveryType || "ship";
 
     const fullName = `${payload.shipping.firstName || "Pickup"} ${payload.shipping.lastName || "Customer"}`.trim();
@@ -42,7 +41,6 @@ export async function POST(req: Request) {
     try {
       const session = await createCheckoutSession({
         contactEmailOrPhone: payload.contact.emailOrPhone,
-        appBaseUrl,
         shipping: {
           fullName,
           phone: payload.shipping.phone || payload.contact.emailOrPhone,
@@ -58,8 +56,6 @@ export async function POST(req: Request) {
       const message = error instanceof Error ? error.message : "Unable to create order before payment.";
       const normalized = message.toLowerCase();
 
-      console.error("Checkout session creation failed", error);
-
       if (normalized.includes("unauthorized")) {
         return NextResponse.json(
           { error: "Please sign in before checkout. Guest checkout is temporarily disabled to prevent missing orders." },
@@ -71,18 +67,12 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: message }, { status: 400 });
       }
 
-      if (
-        normalized.includes("paystack") ||
-        normalized.includes("app url") ||
-        normalized.includes("callback") ||
-        normalized.includes("configured") ||
-        normalized.includes("invalid")
-      ) {
-        return NextResponse.json({ error: message }, { status: 500 });
-      }
+      console.error("Checkout session creation failed", error);
 
-
-      return NextResponse.json({ error: message || "Unable to create your order before payment. No charge was started. Please try again." }, { status: 500 });
+      return NextResponse.json(
+        { error: "Unable to create your order before payment. No charge was started. Please try again." },
+        { status: 500 },
+      );
     }
   } catch {
     return NextResponse.json({ error: "Invalid checkout request payload." }, { status: 400 });
