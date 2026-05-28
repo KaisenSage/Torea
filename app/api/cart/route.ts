@@ -281,7 +281,7 @@ export async function GET() {
 }
 
 export async function PATCH(req: Request) {
-  const payload = (await req.json()) as { key: string; action: "increment" | "decrement" | "remove"; imageUrl?: string };
+  const payload = (await req.json()) as { key: string; action: "increment" | "decrement" | "remove" };
   const { userId } = await auth();
 
   if (!payload?.key || !payload?.action) {
@@ -314,8 +314,8 @@ export async function PATCH(req: Request) {
           }
           await prisma.cartItem.upsert({
             where: { cartId_variantId: { cartId: cart.id, variantId } },
-            update: { quantity: { increment: 1 }, imageUrl: payload.imageUrl || undefined },
-            create: { cartId: cart.id, variantId, quantity: 1, imageUrl: payload.imageUrl || undefined },
+            update: { quantity: { increment: 1 } },
+            create: { cartId: cart.id, variantId, quantity: 1 },
           });
         }
 
