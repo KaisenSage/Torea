@@ -27,6 +27,12 @@ export async function normalizeCartInventory(userId: string) {
   let changed = false;
 
   for (const item of cart.items) {
+    if (!item.variant) {
+      changed = true;
+      await prisma.cartItem.delete({ where: { id: item.id } });
+      continue;
+    }
+
     if (item.variant.allowBackorder) {
       continue;
     }

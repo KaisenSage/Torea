@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { createCheckoutSession } from "@/server/actions/checkout";
 
@@ -85,12 +86,25 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: message }, { status: 500 });
       }
 
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === "P2002") {
+          return NextResponse.json(
+            { error: "Checkout could not create a unique order record. Please try again." },
+            { status: 500 },
+          );
+        }
+
+        if (error.code === "P2003") {
+          return NextResponse.json(
+            { error: "One of the items in your cart is no longer available. Please remove it and try again." },
+            { status: 400 },
+          );
+        }
+      }
+
       console.error("Checkout session creation failed", error);
 
-      return NextResponse.json(
-        { error: "Unable to create your order before payment. No charge was started. Please try again." },
-        { status: 500 },
-      );
+      return NextResponse.json({ error: message }, { status: 500 });
     }
   } catch {
     return NextResponse.json({ error: "Invalid checkout request payload." }, { status: 400 });

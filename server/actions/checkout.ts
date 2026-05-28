@@ -40,7 +40,7 @@ type ResolvedCheckoutItem = {
 };
 
 function generateOrderNumber() {
-  return `TOREA-${Date.now()}`;
+  return `TOREA-${Date.now()}-${randomUUID().slice(0, 8).toUpperCase()}`;
 }
 
 function normalizeValue(value: string | null | undefined) {
