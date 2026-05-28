@@ -5,6 +5,7 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "@/server/db/prisma";
 import { getCurrentDbUser } from "@/server/auth/rbac";
 import { getCartCookieMap } from "@/server/services/cart-cookie";
+import { mergeCartCookieIntoDatabase } from "@/server/services/cart-merge";
 import { initializePaystackTransaction } from "@/server/services/paystack";
 
 type CheckoutInput = {
@@ -270,6 +271,8 @@ export async function createCheckoutSession(input: CheckoutInput) {
   let items: ResolvedCheckoutItem[];
 
   if (signedInUser) {
+    await mergeCartCookieIntoDatabase(user.id);
+
     try {
       items = await resolveSignedInCartItems(user.id);
     } catch (error) {
