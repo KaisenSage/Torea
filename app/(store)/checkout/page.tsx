@@ -49,6 +49,20 @@ export default function CheckoutPage() {
   const [saveInfo, setSaveInfo] = useState(false);
 
   useEffect(() => {
+    // Check Paystack configuration (only check public key accessible on client)
+    const publicKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY;
+    const missing = [];
+    
+    if (!publicKey) missing.push("NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY");
+    
+    if (missing.length > 0) {
+      setMissingPaystackVars(missing);
+      setPaystackReady(false);
+    } else {
+      setPaystackReady(true);
+    }
+    
+    // Load saved checkout info
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("torea_checkout_save");
       setSaveInfo(saved === "true");
@@ -130,10 +144,10 @@ const states = [
   const subtotalKobo = items.reduce((sum, item) => sum + item.priceKobo * item.quantity, 0);
   const selectedShippingOption = displayedShippingOptions.find((option) => option.id === selectedShippingId);
   const shippingFeeKobo = deliveryType === "pickup" ? 0 : (selectedShippingOption?.priceKobo || 0);
-    // Fix ReferenceError: discountApplied is not defined
-    const discountApplied = !!discountCode;
-  const discountKobo = discountApplied ? Math.round(subtotalKobo * 0.05) : 0;
-  const totalKobo = subtotalKobo + shippingFeeKobo - discountKobo;
+    // Discount feature disabled - requires backend validation
+    const discountApplied = false;
+  const discountKobo = 0;
+  const totalKobo = subtotalKobo + shippingFeeKobo;
   const taxKobo = Math.round(totalKobo * 0.075);
 
   async function handleContinueToPaystack() {
@@ -469,17 +483,15 @@ const states = [
             ))}
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex gap-2 opacity-50">
             <input
-              value={discountCode}
-              onChange={(e) => setDiscountCode(e.target.value)}
-              placeholder="Discount code or gift card"
+              disabled
+              placeholder="Discount codes coming soon"
               className="w-full rounded-lg border border-zinc-200 px-3 py-2 text-sm"
             />
             <button
               type="button"
-              // Use setDiscountCode to update discount code
-              onClick={() => setDiscountCode(discountCode.trim())}
+              disabled
               className="rounded-lg border border-zinc-300 px-4 py-2 text-sm"
             >
               Apply

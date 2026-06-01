@@ -55,7 +55,8 @@ function normalizeGuestEmailOrPhone(value: string) {
   }
 
   const sanitized = raw.replace(/\D/g, "");
-  return `${sanitized || "guest"}@guest.torea.store`;
+  const uniqueSuffix = randomUUID().slice(0, 8).toLowerCase();
+  return `${sanitized || "guest"}-${uniqueSuffix}@guest.torea.store`;
 }
 
 function parseFallbackKey(key: string) {

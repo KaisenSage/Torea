@@ -277,3 +277,19 @@ export default async function ProductPage({ params }: ProductPageProps) {
     </div>
   );
 }
+
+export async function generateStaticParams() {
+  try {
+    const products = await prisma.product.findMany({
+      where: { isActive: true },
+      select: { slug: true },
+    });
+    return products.map((product) => ({
+      slug: product.slug,
+    }));
+  } catch {
+    return [];
+  }
+}
+
+export const revalidate = 3600; // Revalidate every hour (ISR)

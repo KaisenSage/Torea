@@ -114,6 +114,15 @@ export async function POST(req: Request) {
       },
     });
 
+    // Clear user's cart after successful payment
+    await tx.cartItem.deleteMany({
+      where: {
+        cart: {
+          userId: paymentTx.order.userId,
+        },
+      },
+    });
+
     for (const item of paymentTx.order.items) {
       await tx.productVariant.update({
         where: { id: item.variantId },
