@@ -2,8 +2,11 @@ import crypto from "node:crypto";
 import { NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/server/db/prisma";
-import { sendOrderConfirmationEmail } from "@/server/services/email";
 import { verifyPaystackTransaction } from "@/server/services/paystack";
+import {
+  cancelPendingOrder,
+  fulfillPaidOrder,
+} from "@/server/services/order-fulfillment";
 
 type PaystackWebhookPayload = {
   event: string;
@@ -55,103 +58,40 @@ export async function POST(req: Request) {
     return NextResponse.json({ duplicate: true }, { status: 200 });
   }
 
-  const verified = await verifyPaystackTransaction(reference);
+  let verified;
+
+  try {
+    verified = await verifyPaystackTransaction(reference);
+  } catch (error) {
+    console.error("Paystack verify failed in webhook", error);
+    return NextResponse.json({ verified: false }, { status: 500 });
+  }
 
   if (verified.status !== "success") {
-    await prisma.paymentTransaction.updateMany({
+    const paymentTx = await prisma.paymentTransaction.findUnique({
       where: { reference },
-      data: {
-        status: "FAILED",
-        gatewayResponse: verified as unknown as Prisma.InputJsonValue,
-      },
+      select: { orderId: true },
     });
+
+    if (paymentTx) {
+      await cancelPendingOrder(paymentTx.orderId, reference);
+    } else {
+      await prisma.paymentTransaction.updateMany({
+        where: { reference },
+        data: {
+          status: "FAILED",
+          gatewayResponse: verified as unknown as Prisma.InputJsonValue,
+        },
+      });
+    }
 
     return NextResponse.json({ verified: false }, { status: 200 });
   }
 
-  const existingPaymentTx = await prisma.paymentTransaction.findUnique({
-    where: { reference },
-    include: {
-      order: {
-        include: {
-          items: true,
-          user: true,
-        },
-      },
-    },
-  });
+  const result = await fulfillPaidOrder(reference, verified);
 
-  if (!existingPaymentTx) {
-    return NextResponse.json({ ok: true, orphanedPayment: true }, { status: 200 });
-  }
-
-  const order = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
-    const paymentTx = await tx.paymentTransaction.findUnique({ where: { id: existingPaymentTx.id }, include: { order: { include: { items: true, user: true } } } });
-
-    if (!paymentTx) {
-      throw new Error("Payment transaction not found");
-    }
-
-    if (paymentTx.status === "SUCCESS" || paymentTx.order.status === "PAID") {
-      return paymentTx.order;
-    }
-
-    await tx.paymentTransaction.update({
-      where: { id: paymentTx.id },
-      data: {
-        status: "SUCCESS",
-        provider: "PAYSTACK",
-        gatewayResponse: verified as unknown as Prisma.InputJsonValue,
-        verifiedAt: new Date(),
-      },
-    });
-
-    await tx.order.update({
-      where: { id: paymentTx.order.id },
-      data: {
-        status: "PAID",
-        paidAt: new Date(),
-      },
-    });
-
-    // Clear user's cart after successful payment
-    await tx.cartItem.deleteMany({
-      where: {
-        cart: {
-          userId: paymentTx.order.userId,
-        },
-      },
-    });
-
-    for (const item of paymentTx.order.items) {
-      await tx.productVariant.update({
-        where: { id: item.variantId },
-        data: {
-          stock: {
-            decrement: item.quantity,
-          },
-        },
-      });
-
-      await tx.inventoryMovement.create({
-        data: {
-          variantId: item.variantId,
-          orderId: paymentTx.order.id,
-          type: "SALE",
-          quantityDelta: -item.quantity,
-          reason: `Order ${paymentTx.order.orderNumber} paid via Paystack`,
-        },
-      });
-    }
-
-    return paymentTx.order;
-  });
-
-  if (order.user.email) {
-    await sendOrderConfirmationEmail({
-      to: order.user.email,
-      orderNumber: order.orderNumber,
-    });
+  if (!result.ok) {
+    return NextResponse.json({ verified: false, reason: result.reason }, { status: 200 });
   }
 
   return NextResponse.json({ ok: true }, { status: 200 });

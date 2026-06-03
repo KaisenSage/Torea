@@ -30,6 +30,8 @@ type VerifyTransactionData = {
   };
 };
 
+export type { VerifyTransactionData };
+
 function getPaystackSecretKey() {
   const key = process.env.PAYSTACK_SECRET_KEY;
 

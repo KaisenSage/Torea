@@ -3,6 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/server/db/prisma";
 import { getCartCookieCount } from "@/server/services/cart-cookie";
 import { normalizeCartInventory } from "@/server/services/cart-inventory";
+import { syncCookieCartToDatabase } from "@/server/services/cart-sync";
 
 export async function GET() {
   const { userId } = await auth();
@@ -13,6 +14,8 @@ export async function GET() {
   }
 
   try {
+    await syncCookieCartToDatabase(userId);
+
     const dbUser = await prisma.user.findUnique({
       where: { clerkId: userId },
       select: { id: true },

@@ -7,10 +7,21 @@ import { getCurrentDbUser } from "@/server/auth/rbac";
 import { getCartCookieMap } from "@/server/services/cart-cookie";
 import { normalizeCartInventory } from "@/server/services/cart-inventory";
 import { initializePaystackTransaction } from "@/server/services/paystack";
+import {
+  resolveShippingFeeKobo,
+  type DeliveryType,
+} from "@/server/config/shipping";
+import { syncCookieCartToDatabase } from "@/server/services/cart-sync";
+import {
+  cancelPendingOrder,
+  reserveOrderStock,
+} from "@/server/services/order-fulfillment";
 
 type CheckoutInput = {
   contactEmailOrPhone: string;
   appBaseUrl?: string;
+  deliveryType?: DeliveryType;
+  shippingOptionId?: string;
   shipping: {
     fullName: string;
     phone: string;
@@ -271,13 +282,22 @@ function assertStockAvailability(items: ResolvedCheckoutItem[]) {
 export async function createCheckoutSession(input: CheckoutInput) {
   const signedInUser = await getCurrentDbUser();
   const user = signedInUser ?? (await getOrCreateGuestUser(input));
+
+  if (signedInUser?.clerkId) {
+    await syncCookieCartToDatabase(signedInUser.clerkId);
+  }
+
   const items = signedInUser ? await resolveSignedInCartItems(user.id) : await resolveGuestCartItems();
 
   assertStockAvailability(items);
 
   const subtotalKobo = items.reduce((acc, item) => acc + item.totalPriceKobo, 0);
 
-  const shippingFeeKobo = input.shipping.state.toLowerCase() === "lagos" ? 250000 : 450000;
+  const shippingFeeKobo = resolveShippingFeeKobo({
+    deliveryType: input.deliveryType || "ship",
+    shippingOptionId: input.shippingOptionId,
+    state: input.shipping.state,
+  });
   const totalKobo = subtotalKobo + shippingFeeKobo;
   const reference = `psk_${randomUUID()}`;
 
@@ -319,26 +339,40 @@ export async function createCheckoutSession(input: CheckoutInput) {
       },
     });
 
+    await reserveOrderStock(
+      tx,
+      items.map((item) => ({
+        variantId: item.variantId,
+        quantity: item.quantity,
+        allowBackorder: item.variant.allowBackorder,
+      })),
+    );
+
     return createdOrder;
   });
 
   const appBaseUrl = resolveAppBaseUrl(input.appBaseUrl);
   const callbackUrl = `${appBaseUrl}/orders/thank-you?reference=${reference}`;
 
-  const initialized = await initializePaystackTransaction({
-    email: user.email,
-    amountKobo: totalKobo,
-    reference,
-    callbackUrl,
-    metadata: {
-      orderId: order.id,
-      orderNumber: order.orderNumber,
-    },
-  });
+  try {
+    const initialized = await initializePaystackTransaction({
+      email: user.email,
+      amountKobo: totalKobo,
+      reference,
+      callbackUrl,
+      metadata: {
+        orderId: order.id,
+        orderNumber: order.orderNumber,
+      },
+    });
 
-  return {
-    authorizationUrl: initialized.authorization_url,
-    reference: initialized.reference,
-    orderId: order.id,
-  };
+    return {
+      authorizationUrl: initialized.authorization_url,
+      reference: initialized.reference,
+      orderId: order.id,
+    };
+  } catch (error) {
+    await cancelPendingOrder(order.id, reference);
+    throw error;
+  }
 }

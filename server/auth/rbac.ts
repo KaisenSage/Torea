@@ -1,6 +1,3 @@
-import 'dotenv/config';
-console.log("Startup test: ADMIN_EMAIL=", process.env.ADMIN_EMAIL);
-console.log("Startup test: ADMIN_EMAIL=", process.env.ADMIN_EMAIL);
 import { Role } from "@prisma/client";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { prisma } from "@/server/db/prisma";
@@ -66,8 +63,6 @@ export async function requireSignedInUser() {
 export async function requireAdmin() {
   const dbUser = await requireSignedInUser();
   const adminEmails = (process.env.ADMIN_EMAIL || "").split(",").map((s) => s.trim()).filter(Boolean);
-  console.log("requireAdmin debug: dbUser.email=", dbUser.email);
-  console.log("requireAdmin debug: adminEmails=", adminEmails);
 
   if (
     dbUser.role !== Role.ADMIN &&

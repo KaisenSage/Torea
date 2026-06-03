@@ -19,6 +19,7 @@ type CheckoutPayload = {
   totals: {
     totalKobo: number;
   };
+  shippingOptionId?: string;
 };
 
 export async function POST(req: Request) {
@@ -44,6 +45,8 @@ export async function POST(req: Request) {
       const session = await createCheckoutSession({
         contactEmailOrPhone: payload.contact.emailOrPhone,
         appBaseUrl,
+        deliveryType,
+        shippingOptionId: payload.shippingOptionId,
         shipping: {
           fullName,
           phone: payload.shipping.phone || payload.contact.emailOrPhone,

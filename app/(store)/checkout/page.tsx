@@ -183,6 +183,7 @@ const states = [
         },
         body: JSON.stringify({
           deliveryType,
+          shippingOptionId: selectedShippingId,
           contact: {
             emailOrPhone,
           },

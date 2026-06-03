@@ -1,11 +1,15 @@
 import { prisma } from "@/server/db/prisma";
+import { setCartCookieMap } from "@/server/services/cart-cookie";
+import { verifyPaystackTransaction } from "@/server/services/paystack";
+import { fulfillPaidOrder } from "@/server/services/order-fulfillment";
 
 type ThankYouPageProps = {
-  searchParams: { reference?: string };
+  searchParams: Promise<{ reference?: string }>;
 };
 
 export default async function ThankYouPage({ searchParams }: ThankYouPageProps) {
-  const reference = searchParams.reference;
+  const params = await searchParams;
+  const reference = params.reference;
   let orderSummary: React.ReactNode = null;
   let statusMessage = (
     <p className="mt-3 text-sm text-zinc-600">
@@ -14,7 +18,7 @@ export default async function ThankYouPage({ searchParams }: ThankYouPageProps) 
   );
 
   if (reference) {
-    const tx = await prisma.paymentTransaction.findUnique({
+    let tx = await prisma.paymentTransaction.findUnique({
       where: { reference },
       include: {
         order: {
@@ -29,6 +33,32 @@ export default async function ThankYouPage({ searchParams }: ThankYouPageProps) 
         },
       },
     });
+
+    if (tx && tx.status !== "SUCCESS" && tx.order?.status === "PENDING_PAYMENT") {
+      try {
+        const verified = await verifyPaystackTransaction(reference);
+        if (verified.status === "success") {
+          await fulfillPaidOrder(reference, verified);
+          tx = await prisma.paymentTransaction.findUnique({
+            where: { reference },
+            include: {
+              order: {
+                include: {
+                  items: {
+                    include: {
+                      product: true,
+                      variant: true,
+                    },
+                  },
+                },
+              },
+            },
+          });
+        }
+      } catch {
+        // Webhook or a later retry can still finalize the order.
+      }
+    }
 
     const webhook = tx
       ? null
@@ -53,6 +83,7 @@ export default async function ThankYouPage({ searchParams }: ThankYouPageProps) 
 
     if (tx) {
       if (tx.status === "SUCCESS" && tx.order?.status === "PAID") {
+        await setCartCookieMap({});
         statusMessage = (
           <p className="mt-3 text-sm text-zinc-600">
             <strong>Payment confirmed.</strong> Your order <span className="font-semibold">{tx.order.orderNumber}</span> has been paid and is being processed. You will also receive a confirmation email shortly.

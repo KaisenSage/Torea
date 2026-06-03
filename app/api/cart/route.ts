@@ -3,6 +3,10 @@ import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/server/db/prisma";
 import { getCartCookieMap, setCartCookieMap } from "@/server/services/cart-cookie";
 import { normalizeCartInventory } from "@/server/services/cart-inventory";
+import {
+  resolveCartKeyToVariantId,
+  syncCookieCartToDatabase,
+} from "@/server/services/cart-sync";
 
 type CartProduct = Record<string, unknown> | null;
 
@@ -267,6 +271,7 @@ export async function GET() {
 
   if (userId) {
     try {
+      await syncCookieCartToDatabase(userId);
       const dbCart = await fromDatabase(userId);
       if (dbCart) {
         return NextResponse.json(dbCart, { status: 200 });
@@ -288,60 +293,73 @@ export async function PATCH(req: Request) {
     return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
   }
 
-  if (userId && payload.key.startsWith("variant:")) {
+  if (userId) {
     try {
-      const variantId = payload.key.replace("variant:", "");
       const dbUser = await prisma.user.findUnique({ where: { clerkId: userId }, select: { id: true } });
 
       if (dbUser) {
-        const cart = await prisma.cart.upsert({
-          where: { userId: dbUser.id },
-          update: {},
-          create: { userId: dbUser.id },
-        });
+        const variantId =
+          payload.key.startsWith("variant:")
+            ? payload.key.replace("variant:", "")
+            : await resolveCartKeyToVariantId(payload.key);
 
-
-        if (payload.action === "increment") {
-          // Stock check
-          const variant = await prisma.productVariant.findUnique({ where: { id: variantId }, select: { stock: true } });
-          if (!variant || variant.stock <= 0) {
-            return NextResponse.json({ error: "Out of stock" }, { status: 400 });
-          }
-          const existing = await prisma.cartItem.findUnique({ where: { cartId_variantId: { cartId: cart.id, variantId } } });
-          const newQty = (existing?.quantity || 0) + 1;
-          if (newQty > variant.stock) {
-            return NextResponse.json({ error: "Not enough stock" }, { status: 400 });
-          }
-          await prisma.cartItem.upsert({
-            where: { cartId_variantId: { cartId: cart.id, variantId } },
-            update: { quantity: { increment: 1 } },
-            create: { cartId: cart.id, variantId, quantity: 1 },
-          });
-        }
-
-        if (payload.action === "decrement") {
-          const existing = await prisma.cartItem.findUnique({
-            where: { cartId_variantId: { cartId: cart.id, variantId } },
+        if (variantId) {
+          const cart = await prisma.cart.upsert({
+            where: { userId: dbUser.id },
+            update: {},
+            create: { userId: dbUser.id },
           });
 
-          if (existing) {
-            if (existing.quantity <= 1) {
-              await prisma.cartItem.delete({ where: { id: existing.id } });
-            } else {
-              await prisma.cartItem.update({
-                where: { id: existing.id },
-                data: { quantity: { decrement: 1 } },
-              });
+          if (payload.action === "increment") {
+            const variant = await prisma.productVariant.findUnique({
+              where: { id: variantId },
+              select: { stock: true, allowBackorder: true },
+            });
+
+            if (!variant || (!variant.allowBackorder && variant.stock <= 0)) {
+              return NextResponse.json({ error: "Out of stock" }, { status: 400 });
+            }
+
+            const existing = await prisma.cartItem.findUnique({
+              where: { cartId_variantId: { cartId: cart.id, variantId } },
+            });
+            const newQty = (existing?.quantity || 0) + 1;
+
+            if (!variant.allowBackorder && newQty > variant.stock) {
+              return NextResponse.json({ error: "Not enough stock" }, { status: 400 });
+            }
+
+            await prisma.cartItem.upsert({
+              where: { cartId_variantId: { cartId: cart.id, variantId } },
+              update: { quantity: { increment: 1 } },
+              create: { cartId: cart.id, variantId, quantity: 1 },
+            });
+          }
+
+          if (payload.action === "decrement") {
+            const existing = await prisma.cartItem.findUnique({
+              where: { cartId_variantId: { cartId: cart.id, variantId } },
+            });
+
+            if (existing) {
+              if (existing.quantity <= 1) {
+                await prisma.cartItem.delete({ where: { id: existing.id } });
+              } else {
+                await prisma.cartItem.update({
+                  where: { id: existing.id },
+                  data: { quantity: { decrement: 1 } },
+                });
+              }
             }
           }
-        }
 
-        if (payload.action === "remove") {
-          await prisma.cartItem.deleteMany({ where: { cartId: cart.id, variantId } });
-        }
+          if (payload.action === "remove") {
+            await prisma.cartItem.deleteMany({ where: { cartId: cart.id, variantId } });
+          }
 
-        const dbCart = await fromDatabase(userId);
-        return NextResponse.json(dbCart || { items: [] }, { status: 200 });
+          const dbCart = await fromDatabase(userId);
+          return NextResponse.json(dbCart || { items: [] }, { status: 200 });
+        }
       }
     } catch {
       // fall back to cookie mode
@@ -352,15 +370,19 @@ export async function PATCH(req: Request) {
 
 
   if (payload.action === "increment") {
-    // Stock check for guests
     if (payload.key.startsWith("variant:")) {
       const variantId = payload.key.replace("variant:", "");
-      const variant = await prisma.productVariant.findUnique({ where: { id: variantId }, select: { stock: true } });
-      if (!variant || variant.stock <= 0) {
+      const variant = await prisma.productVariant.findUnique({
+        where: { id: variantId },
+        select: { stock: true, allowBackorder: true },
+      });
+
+      if (!variant || (!variant.allowBackorder && variant.stock <= 0)) {
         return NextResponse.json({ error: "Out of stock" }, { status: 400 });
       }
+
       const newQty = (map[payload.key] || 0) + 1;
-      if (newQty > variant.stock) {
+      if (!variant.allowBackorder && newQty > variant.stock) {
         return NextResponse.json({ error: "Not enough stock" }, { status: 400 });
       }
     }
